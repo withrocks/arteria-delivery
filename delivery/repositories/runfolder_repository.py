@@ -21,7 +21,7 @@ class DefaultFileSystemService(object):
 class FileSystemBasedRunfolderRepository(object):
 
     def __init__(self, base_path, file_system_service = DefaultFileSystemService()):
-        self.base_path = base_path
+        self._base_path = base_path
         self.file_system_service = file_system_service
 
 
@@ -29,12 +29,12 @@ class FileSystemBasedRunfolderRepository(object):
         # TODO Filter based on expression for runfolders...
         runfolder_expression = r"^\d+_"
 
-        directories = self.file_system_service.find_runfolder_directories()
+        directories = self.file_system_service.find_runfolder_directories(self._base_path)
         for directory in directories:
             if re.match(runfolder_expression, os.path.basename(directory)):
 
                 name = directory
-                path = os.path.join(self.base_path, directory)
+                path = os.path.join(self._base_path, directory)
 
                 projects_base_dir = os.path.join(path, "Projects")
                 project_directories = self.file_system_service.find_project_directories(projects_base_dir)
@@ -42,7 +42,7 @@ class FileSystemBasedRunfolderRepository(object):
                 runfolder = Runfolder(name=name, path=path, projects=None)
 
                 def project_from_dir(d):
-                    return Project(name=d, path=os.path.join(projects_base_dir, d), runfolder=runfolder)
+                    return Project(name=d, path=os.path.join(projects_base_dir, d), runfolder_path=path)
 
                 # There are scenarios where there are no project directories in the runfolder,
                 # i.e. when fastq files have not yet been divided into projects

@@ -1,4 +1,6 @@
+
 import os
+import json
 
 class Runfolder(object):
 
@@ -17,3 +19,6 @@ class Runfolder(object):
 
     def __repr__(self):
         return self.__str__()
+
+    def to_json(self):
+        return json.dumps(self, default=lambda o: o.__dict__)

@@ -2,10 +2,10 @@ import os
 
 class Project(object):
 
-    def __init__(self, name, path, runfolder = None):
+    def __init__(self, name, path, runfolder_path=None):
         self.name = name
         self.path = path
-        self.runfolder = runfolder
+        self.runfolder_path = runfolder_path
 
     def __str__(self):
         return str(self.__dict__)

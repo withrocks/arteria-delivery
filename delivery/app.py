@@ -4,6 +4,10 @@ from tornado.web import URLSpec as url
 from arteria.web.app import AppService
 
 from delivery.handlers.utility_handlers import VersionHandler
+from delivery.handlers.runfolder_handlers import RunfolderHandler
+
+from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
+
 
 def routes(**kwargs):
     """
@@ -12,14 +16,19 @@ def routes(**kwargs):
     doc strings of the get/post/put/delete methods
     :param: **kwargs will be passed when initializing the routes.
     """
-
     return [
-        url(r"/api/1.0/version", VersionHandler, name="version", kwargs=kwargs)
+        url(r"/api/1.0/version", VersionHandler, name="version", kwargs=kwargs),
+        url(r"/api/1.0/runfolders", RunfolderHandler, name="runfolder", kwargs=kwargs)
     ]
+
 
 def start():
     """
     Start the delivery-ws app
     """
     app_svc = AppService.create(__package__)
-    app_svc.start(routes(config=app_svc.config_svc))
+
+    config = app_svc.config_svc
+    runfolder_repo = FileSystemBasedRunfolderRepository(config["monitored_directory"])
+
+    app_svc.start(routes({"config": config, "runfolder_repo": runfolder_repo}))

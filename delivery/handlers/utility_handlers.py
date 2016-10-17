@@ -4,7 +4,7 @@ from arteria.web.handlers import BaseRestHandler
 from delivery import __version__ as version
 
 
-class BaseChecksumHandler(BaseRestHandler):
+class ArteriaDeliveryBaseHandler(BaseRestHandler):
     """
     Base handler for checksum.
     """
@@ -19,7 +19,7 @@ class BaseChecksumHandler(BaseRestHandler):
         self.config = config
 
 
-class VersionHandler(BaseChecksumHandler):
+class VersionHandler(ArteriaDeliveryBaseHandler):
 
     """
     Get the version of the service
