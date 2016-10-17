@@ -1,6 +1,6 @@
 
 
-class FileSystemBasedProjectRepository(object):
+class ProjectRepository(object):
 
     def __init__(self, runfolder_repository):
         self.runfolder_repository = runfolder_repository

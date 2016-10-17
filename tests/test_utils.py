@@ -28,19 +28,19 @@ _runfolder1 = Runfolder(name="160930_ST-E00216_0111_BH37CWALXX",
 _runfolder1.projects = [Project(name="ABC_123",
                                 path="/foo/160930_ST-E00216_0111_BH37CWALXX/Projects/ABC_123",
                                 runfolder=_runfolder1),
-                       Project(name="DEF_456",
-                               path="/foo/160930_ST-E00216_0111_BH37CWALXX/Projects/DEF_456",
-                               runfolder=_runfolder1)]
+                        Project(name="DEF_456",
+                                path="/foo/160930_ST-E00216_0111_BH37CWALXX/Projects/DEF_456",
+                                runfolder=_runfolder1)]
 
 _runfolder2 = Runfolder(name="160930_ST-E00216_0112_BH37CWALXX",
                         path="/foo/160930_ST-E00216_0112_BH37CWALXX")
 
 _runfolder2.projects = [Project(name="ABC_123",
-                               path="/foo/160930_ST-E00216_0112_BH37CWALXX/Projects/ABC_123",
-                               runfolder=_runfolder2),
-                       Project(name="DEF_456",
-                               path="/foo/160930_ST-E00216_0112_BH37CWALXX/Projects/DEF_456",
-                               runfolder=_runfolder2)]
+                                path="/foo/160930_ST-E00216_0112_BH37CWALXX/Projects/ABC_123",
+                                runfolder=_runfolder2),
+                        Project(name="DEF_456",
+                                path="/foo/160930_ST-E00216_0112_BH37CWALXX/Projects/DEF_456",
+                                runfolder=_runfolder2)]
 
 
 FAKE_RUNFOLDERS = [_runfolder1, _runfolder2]
