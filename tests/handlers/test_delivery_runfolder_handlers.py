@@ -16,7 +16,6 @@ class TestRunfolderHandlers(AsyncHTTPTestCase):
     API_BASE = "/api/1.0"
 
     mock_runfolder_repo = MagicMock()
-    mock_runfolder_repo.get_runfolders.return_value = FAKE_RUNFOLDERS
 
     def get_app(self):
         return Application(
@@ -25,10 +24,24 @@ class TestRunfolderHandlers(AsyncHTTPTestCase):
                 runfolder_repo=self.mock_runfolder_repo))
 
     def test_get_runfolders(self):
+
+        self.mock_runfolder_repo.get_runfolders.return_value = FAKE_RUNFOLDERS
+
         response = self.fetch(self.API_BASE + "/runfolders")
 
         expected_result = {"runfolders": map(
             lambda x: x.to_json(), FAKE_RUNFOLDERS)}
+
+        self.assertEqual(response.code, 200)
+        self.assertDictEqual(json.loads(response.body), expected_result)
+
+    def test_get_runfolders_empty(self):
+
+        self.mock_runfolder_repo.get_runfolders.return_value = []
+
+        response = self.fetch(self.API_BASE + "/runfolders")
+
+        expected_result = {"runfolders": []}
 
         self.assertEqual(response.code, 200)
         self.assertDictEqual(json.loads(response.body), expected_result)

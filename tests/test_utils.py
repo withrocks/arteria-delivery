@@ -1,6 +1,6 @@
 
-from models.project import Project
-from models.runfolder import Runfolder
+from delivery.models.project import Project
+from delivery.models.runfolder import Runfolder
 
 from mock import MagicMock
 
