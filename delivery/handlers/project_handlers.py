@@ -1,6 +1,4 @@
 
-import json
-
 from delivery.handlers.utility_handlers import ArteriaDeliveryBaseHandler
 from delivery.repositories.project_repository import ProjectRepository
 
