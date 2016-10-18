@@ -10,12 +10,6 @@ class Project(BaseModel):
         self.path = path
         self.runfolder_path = runfolder_path
 
-    def __str__(self):
-        return str(self.__dict__)
-
-    def __repr__(self):
-        return self.__str__()
-
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return os.path.abspath(self.path) == os.path.abspath(other.path)

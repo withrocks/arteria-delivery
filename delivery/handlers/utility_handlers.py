@@ -18,6 +18,13 @@ class ArteriaDeliveryBaseHandler(BaseRestHandler):
         """
         self.config = config
 
+    def write_list_of_models_as_json(self, model_list, key):
+        if model_list:
+            as_json = map(lambda x: x.to_json(), model_list)
+            self.write_json({key: as_json})
+        else:
+            self.write_json({key: list()})
+
 
 class VersionHandler(ArteriaDeliveryBaseHandler):
 

@@ -14,12 +14,13 @@ class TestRunfolderRepository(unittest.TestCase):
 
     expected_runfolders = FAKE_RUNFOLDERS
 
+    file_system_service = mock_file_system_service(fake_directories,
+                                                   fake_projects)
+    repo = FileSystemBasedRunfolderRepository(base_path="/foo",
+                                              file_system_service=file_system_service)
+
     def test_get_runfolders(self):
-        file_system_service = mock_file_system_service(fake_directories,
-                                                       fake_projects)
-        repo = FileSystemBasedRunfolderRepository(base_path="/foo",
-                                                  file_system_service=file_system_service)
-        actual_runfolders = list(repo.get_runfolders())
+        actual_runfolders = list(self.repo.get_runfolders())
 
         self.assertListEqual(self.expected_runfolders, actual_runfolders)
 
@@ -38,3 +39,9 @@ class TestRunfolderRepository(unittest.TestCase):
                                                   file_system_service=file_system_service)
         actual_runfolders = list(repo.get_runfolders())
         self.assertListEqual(self.expected_runfolders, actual_runfolders)
+
+    def test_get_runfolder(self):
+        runfolder_name = "160930_ST-E00216_0111_BH37CWALXX"
+        actual_runfolder = self.repo.get_runfolder(runfolder_name)
+        self.assertIsInstance(actual_runfolder, Runfolder)
+        self.assertEqual(actual_runfolder.name, runfolder_name)

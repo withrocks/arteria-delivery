@@ -5,7 +5,7 @@ from arteria.web.app import AppService
 
 from delivery.handlers.utility_handlers import VersionHandler
 from delivery.handlers.runfolder_handlers import RunfolderHandler
-from delivery.handlers.project_handlers import ProjectHandler
+from delivery.handlers.project_handlers import ProjectHandler, ProjectsForRunfolderHandler
 
 from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
 
@@ -19,10 +19,10 @@ def routes(**kwargs):
     """
     return [
         url(r"/api/1.0/version", VersionHandler, name="version", kwargs=kwargs),
-        url(r"/api/1.0/runfolders", RunfolderHandler,
-            name="runfolder", kwargs=kwargs),
-        url(r"/api/1.0/projects", ProjectHandler,
-            name="projects", kwargs=kwargs)
+        url(r"/api/1.0/runfolders", RunfolderHandler, name="runfolder", kwargs=kwargs),
+        url(r"/api/1.0/projects", ProjectHandler, name="projects", kwargs=kwargs),
+        url(r"/api/1.0/runfolder/(.+)/projects", ProjectsForRunfolderHandler,
+            name="projects_for_runfolder", kwargs=kwargs)
     ]
 
 

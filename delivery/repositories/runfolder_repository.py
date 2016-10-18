@@ -66,3 +66,13 @@ class FileSystemBasedRunfolderRepository(object):
 
     def get_runfolders(self):
         return self._get_runfolders()
+
+    def get_runfolder(self, runfolder):
+        runfolders = self.get_runfolders()
+        matching_name = [r for r in runfolders if r.name == runfolder]
+        if len(matching_name) > 1:
+            raise AssertionError("Found more than 1 runfolder matching: ".format(r))
+        if matching_name[0]:
+            return matching_name[0]
+        else:
+            return None
