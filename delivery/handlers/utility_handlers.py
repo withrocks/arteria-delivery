@@ -24,6 +24,7 @@ class VersionHandler(ArteriaDeliveryBaseHandler):
     """
     Get the version of the service
     """
+
     def get(self):
         """
         Returns the version of the checksum-service

@@ -9,4 +9,3 @@ class ProjectRepository(object):
         for runfolder in self.runfolder_repository.get_runfolders():
             for project in runfolder.projects:
                 yield project
-

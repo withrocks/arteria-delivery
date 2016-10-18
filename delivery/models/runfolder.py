@@ -2,9 +2,10 @@
 import os
 import json
 
+
 class Runfolder(object):
 
-    def __init__(self, name, path, projects = None):
+    def __init__(self, name, path, projects=None):
         self.name = name
         self.path = path
         self.projects = projects

@@ -1,5 +1,6 @@
 import os
 
+
 class Project(object):
 
     def __init__(self, name, path, runfolder_path=None):

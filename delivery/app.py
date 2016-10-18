@@ -18,7 +18,8 @@ def routes(**kwargs):
     """
     return [
         url(r"/api/1.0/version", VersionHandler, name="version", kwargs=kwargs),
-        url(r"/api/1.0/runfolders", RunfolderHandler, name="runfolder", kwargs=kwargs)
+        url(r"/api/1.0/runfolders", RunfolderHandler,
+            name="runfolder", kwargs=kwargs)
     ]
 
 
@@ -29,6 +30,7 @@ def start():
     app_svc = AppService.create(__package__)
 
     config = app_svc.config_svc
-    runfolder_repo = FileSystemBasedRunfolderRepository(config["monitored_directory"])
+    runfolder_repo = FileSystemBasedRunfolderRepository(
+        config["monitored_directory"])
 
     app_svc.start(routes({"config": config, "runfolder_repo": runfolder_repo}))
