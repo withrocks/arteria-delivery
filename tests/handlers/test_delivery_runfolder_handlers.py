@@ -7,7 +7,6 @@ from tornado.testing import *
 from tornado.web import Application
 
 from delivery.app import routes
-from delivery import __version__ as checksum_version
 
 from tests.test_utils import DummyConfig, FAKE_RUNFOLDERS
 
