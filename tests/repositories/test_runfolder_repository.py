@@ -1,10 +1,6 @@
-import os
 import unittest
 
-from mock import patch, MagicMock
-
-from models.runfolder import Runfolder
-from models.project import Project
+from delivery.models.runfolder import Runfolder
 from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
 
 from tests.test_utils import FAKE_RUNFOLDERS, mock_file_system_service, fake_directories, fake_projects
