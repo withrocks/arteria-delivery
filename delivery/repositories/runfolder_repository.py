@@ -3,8 +3,8 @@ import logging
 import os
 import re
 
-from models.runfolder import Runfolder
-from models.project import Project
+from delivery.models.runfolder import Runfolder
+from delivery.models.project import Project
 
 
 log = logging.getLogger(__name__)
