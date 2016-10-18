@@ -21,14 +21,14 @@ class TestRunfolderHandlers(AsyncHTTPTestCase):
     def get_app(self):
         return Application(
             routes(
-                  config=DummyConfig(),
-                  runfolder_repo=self.mock_runfolder_repo))
+                config=DummyConfig(),
+                runfolder_repo=self.mock_runfolder_repo))
 
     def test_get_runfolders(self):
         response = self.fetch(self.API_BASE + "/runfolders")
 
-        expected_result = {"runfolders": map(lambda x: x.to_json(), FAKE_RUNFOLDERS)}
+        expected_result = {"runfolders": map(
+            lambda x: x.to_json(), FAKE_RUNFOLDERS)}
 
         self.assertEqual(response.code, 200)
         self.assertDictEqual(json.loads(response.body), expected_result)
-

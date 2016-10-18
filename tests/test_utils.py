@@ -4,15 +4,18 @@ from models.runfolder import Runfolder
 
 from mock import MagicMock
 
+
 class TestUtils:
     DUMMY_CONFIG = {"monitored_directory": "/foo"}
 
 
 class DummyConfig:
+
     def __getitem__(self, key):
         return TestUtils.DUMMY_CONFIG[key]
 
-fake_directories = ["160930_ST-E00216_0111_BH37CWALXX", "160930_ST-E00216_0112_BH37CWALXX"]
+fake_directories = ["160930_ST-E00216_0111_BH37CWALXX",
+                    "160930_ST-E00216_0112_BH37CWALXX"]
 fake_projects = ["ABC_123", "DEF_456"]
 
 
@@ -44,5 +47,3 @@ _runfolder2.projects = [Project(name="ABC_123",
 
 
 FAKE_RUNFOLDERS = [_runfolder1, _runfolder2]
-
-

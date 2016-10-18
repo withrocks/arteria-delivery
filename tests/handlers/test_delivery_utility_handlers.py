@@ -26,4 +26,3 @@ class TestUtilityHandlers(AsyncHTTPTestCase):
 
         self.assertEqual(response.code, 200)
         self.assertEqual(json.loads(response.body), expected_result)
-

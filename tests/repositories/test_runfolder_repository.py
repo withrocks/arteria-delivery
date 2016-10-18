@@ -26,7 +26,8 @@ class TestRunfolderRepository(unittest.TestCase):
         for actual_runfolder in actual_runfolders:
             for expected_runfolder in self.expected_runfolders:
                 if actual_runfolder == expected_runfolder:
-                    self.assertListEqual(actual_runfolder.projects, expected_runfolder.projects)
+                    self.assertListEqual(
+                        actual_runfolder.projects, expected_runfolder.projects)
 
     def test_get_runfolders_does_not_return_none_runfolder(self):
         # Adding a directory which does not conform to the runfolder pattern
@@ -37,4 +38,3 @@ class TestRunfolderRepository(unittest.TestCase):
                                                   file_system_service=file_system_service)
         actual_runfolders = list(repo.get_runfolders())
         self.assertListEqual(self.expected_runfolders, actual_runfolders)
-
