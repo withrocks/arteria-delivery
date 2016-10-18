@@ -1,16 +1,10 @@
 
-import json
-
 from delivery.handlers.utility_handlers import ArteriaDeliveryBaseHandler
-
-from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
 
 
 class RunfolderHandler(ArteriaDeliveryBaseHandler):
 
     def initialize(self, **kwargs):
-        # TODO Don't know if this should be called here, or if __init__ method
-        # should be used
         self.runfolder_repo = kwargs["runfolder_repo"]
         super(RunfolderHandler, self).initialize(kwargs)
 

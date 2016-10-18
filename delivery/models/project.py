@@ -1,7 +1,9 @@
 import os
 
+from delivery.models import BaseModel
 
-class Project(object):
+
+class Project(BaseModel):
 
     def __init__(self, name, path, runfolder_path=None):
         self.name = name

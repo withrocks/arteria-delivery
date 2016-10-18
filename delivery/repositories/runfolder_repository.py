@@ -1,4 +1,5 @@
 
+import logging
 import os
 import re
 
@@ -6,17 +7,26 @@ from models.runfolder import Runfolder
 from models.project import Project
 
 
+log = logging.getLogger(__name__)
+
+
 class DefaultFileSystemService(object):
 
+    def _list_directories(self, base_path):
+
+        log.debug("Listing dirs in: {}".format(os.path.abspath(base_path)))
+        for my_dir in os.listdir(base_path):
+            dir_abs_path = os.path.abspath(os.path.join(base_path, my_dir))
+
+            if os.path.isdir(dir_abs_path):
+                log.debug("Found dir: {}".format(dir_abs_path))
+                yield dir_abs_path
+
     def find_project_directories(self, projects_base_dir):
-        for dir in os.listdir(projects_base_dir):
-            if os.path.isdir(dir):
-                yield dir
+        return self._list_directories(projects_base_dir)
 
     def find_runfolder_directories(self, base_path):
-        for dir in os.listdir(base_path):
-            if os.path.isdir(dir):
-                yield dir
+        return self._list_directories(base_path)
 
 
 class FileSystemBasedRunfolderRepository(object):
@@ -34,7 +44,7 @@ class FileSystemBasedRunfolderRepository(object):
         for directory in directories:
             if re.match(runfolder_expression, os.path.basename(directory)):
 
-                name = directory
+                name = os.path.basename(directory)
                 path = os.path.join(self._base_path, directory)
 
                 projects_base_dir = os.path.join(path, "Projects")
@@ -44,7 +54,7 @@ class FileSystemBasedRunfolderRepository(object):
                 runfolder = Runfolder(name=name, path=path, projects=None)
 
                 def project_from_dir(d):
-                    return Project(name=d, path=os.path.join(projects_base_dir, d), runfolder_path=path)
+                    return Project(name=os.path.basename(d), path=os.path.join(projects_base_dir, d), runfolder_path=path)
 
                 # There are scenarios where there are no project directories in the runfolder,
                 # i.e. when fastq files have not yet been divided into projects
