@@ -41,9 +41,8 @@ class TestIntegration(AsyncHTTPTestCase):
         response_json = json.loads(response.body)
         self.assertTrue(len(response_json) == 1)
 
-        first_runfolder = json.loads(response_json["runfolders"][0])
-        self.assertTrue(first_runfolder["name"]
-                        == "160930_ST-E00216_0111_BH37CWALXX")
+        first_runfolder = response_json["runfolders"][0]
+        self.assertEqual(first_runfolder["name"], "160930_ST-E00216_0111_BH37CWALXX")
 
     def test_can_return_projects(self):
         response = self.fetch(self.API_BASE + "/projects")
@@ -52,8 +51,8 @@ class TestIntegration(AsyncHTTPTestCase):
         response_json = json.loads(response.body)
         self.assertTrue(len(response_json) == 1)
 
-        first_project = json.loads(response_json["projects"][0])
-        self.assertTrue(first_project["name"] == "ABC_123")
+        first_project = response_json["projects"][0]
+        self.assertEqual(first_project["name"], "ABC_123")
 
     def test_can_stage_delivery(self):
         pass

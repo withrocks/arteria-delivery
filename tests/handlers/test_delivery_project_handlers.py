@@ -32,7 +32,7 @@ class TestProjectHandlers(AsyncHTTPTestCase):
         expected_result = []
         for runfolder in FAKE_RUNFOLDERS:
             for project in runfolder.projects:
-                expected_result.append(project.to_json())
+                expected_result.append(project.__dict__)
 
         self.assertEqual(response.code, 200)
         self.assertDictEqual(json.loads(response.body), {"projects": expected_result})

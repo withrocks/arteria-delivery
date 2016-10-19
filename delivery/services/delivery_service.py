@@ -48,10 +48,11 @@ class MoverDeliveryService(BaseDeliveryService):
 
     def _status_for_delivery_id(self, delivery_id):
         log.debug("Will query Mover about status for delivery id: {}".format(delivery_id.id))
-        #TODO
+        # TODO
         return DeliveryStatus(successful=None, msg="Just faking it for now...")
 
     def _status_for_delivery_target(self, delivery_target):
-        log.debug("Will query Mover about delivery status of directory: {}".format(delivery_target.delivery_target))
-        #TODO
+        log.debug("Will query Mover about delivery status of directory: {}".format(
+            delivery_target.delivery_target))
+        # TODO
         return DeliveryStatus(successful=None, msg="Just faking it for now...")

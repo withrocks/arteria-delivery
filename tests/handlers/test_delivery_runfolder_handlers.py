@@ -2,7 +2,6 @@
 import json
 from mock import MagicMock
 
-
 from tornado.testing import *
 from tornado.web import Application
 
@@ -29,11 +28,11 @@ class TestRunfolderHandlers(AsyncHTTPTestCase):
 
         response = self.fetch(self.API_BASE + "/runfolders")
 
-        expected_result = {"runfolders": map(
-            lambda x: x.to_json(), FAKE_RUNFOLDERS)}
+        expected_result = list([runfolder.__dict__ for runfolder in FAKE_RUNFOLDERS])
+        expected_json = json.dumps({"runfolders": expected_result}, default=lambda x: x.__dict__)
 
         self.assertEqual(response.code, 200)
-        self.assertDictEqual(json.loads(response.body), expected_result)
+        self.assertEqual(response.body, expected_json)
 
     def test_get_runfolders_empty(self):
 

@@ -1,4 +1,6 @@
 
+import json
+
 from arteria.web.handlers import BaseRestHandler
 
 from delivery import __version__ as version
@@ -20,8 +22,8 @@ class ArteriaDeliveryBaseHandler(BaseRestHandler):
 
     def write_list_of_models_as_json(self, model_list, key):
         if model_list:
-            as_json = map(lambda x: x.to_json(), model_list)
-            self.write_json({key: as_json})
+            as_json = json.dumps({key: model_list}, default=lambda x: x.__dict__)
+            self.write_json(as_json)
         else:
             self.write_json({key: list()})
 

@@ -25,7 +25,9 @@ class DeliverRunfolderHandler(ArteriaDeliveryBaseHandler):
 
     def post(self, runfolder_id):
 
-        request_data = json.loads(self.request.body)
+        # TODO This is just a sketch that is not yet tested!
+
+        request_data = self.body_as_object(["delivery_project_id"])
         delivery_project_id = request_data.get("delivery_project_id")
         projects_to_deliver = request_data.get("projects", [])
 
@@ -46,5 +48,3 @@ class DeliverRunfolderHandler(ArteriaDeliveryBaseHandler):
     def get(self, runfolder_id):
         # TODO Figure out if it's possible to get the status for a delivery like this...
         pass
-
-

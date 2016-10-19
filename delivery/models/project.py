@@ -12,5 +12,6 @@ class Project(BaseModel):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
+            # TODO Make sure the property is abspath
             return os.path.abspath(self.path) == os.path.abspath(other.path)
         return False

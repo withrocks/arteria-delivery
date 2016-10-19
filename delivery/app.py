@@ -9,6 +9,8 @@ from delivery.handlers.project_handlers import ProjectHandler, ProjectsForRunfol
 from delivery.handlers.delivery_handlers import DeliverRunfolderHandler
 
 from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
+from delivery.services.delivery_service import MoverDeliveryService
+from delivery.services.external_program_service import ExternalProgramService
 
 
 def routes(**kwargs):
@@ -24,8 +26,10 @@ def routes(**kwargs):
         url(r"/api/1.0/projects", ProjectHandler, name="projects", kwargs=kwargs),
         url(r"/api/1.0/runfolder/(.+)/projects", ProjectsForRunfolderHandler,
             name="projects_for_runfolder", kwargs=kwargs),
-        url(r"/api/1.0/deliver/runfolder/(.+)", DeliverRunfolderHandler, name="delivery_runfolder", kwargs=kwargs)
-        # TODO Figure out if we want to be able to deliver any type of directory, not just a runfolder
+        url(r"/api/1.0/deliver/runfolder/(.+)", DeliverRunfolderHandler,
+            name="delivery_runfolder", kwargs=kwargs)
+        # TODO Figure out if we want to be able to deliver any type of directory,
+        # not just a runfolder
     ]
 
 
@@ -38,5 +42,8 @@ def start():
     config = app_svc.config_svc
     runfolder_repo = FileSystemBasedRunfolderRepository(
         config["monitored_directory"])
+    external_program_service = ExternalProgramService()
+    delivery_service = MoverDeliveryService(external_program_service)
 
-    app_svc.start(routes({"config": config, "runfolder_repo": runfolder_repo}))
+    app_svc.start(routes(config=config, runfolder_repo=runfolder_repo,
+                         delivery_service=delivery_service))

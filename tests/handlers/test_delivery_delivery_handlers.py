@@ -26,8 +26,6 @@ class TestDeliveryHandlers(AsyncHTTPTestCase):
                 config=DummyConfig(),
                 runfolder_repo=self.mock_runfolder_repo))
 
-
     def test_post_delivery_runfolder(self):
         # TODO Write tests
         pass
-
