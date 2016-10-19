@@ -42,6 +42,8 @@ class MoverDeliveryService(BaseDeliveryService):
         self.external_program_service = ExternalProgramService()
 
     def _deliver(self, delivery_order):
+        # TODO For mover deliveries we will probably have to copy the entire runfolder..
+        #      This means that this might need to have be asynchronous about this...
         log.debug("Fake delivery to delivery target: {}".format(delivery_order))
         # TODO
         return DeliveryStatus(successful=None, msg="Just faking it for now...")
