@@ -9,7 +9,7 @@ class DeliveryOrder(BaseModel):
         # TODO Still need to figure out the details here...
 
         self.delivery_project_id = delivery_project_id
-        # TODO Need to validate that delivery_target isa valid model i.e. Project or Runfolder
+        # TODO Need to validate that delivery_target is a valid model i.e. Project or Runfolder
         self.delivery_target = delivery_target
 
 

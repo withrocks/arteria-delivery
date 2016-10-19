@@ -6,6 +6,7 @@ from arteria.web.app import AppService
 from delivery.handlers.utility_handlers import VersionHandler
 from delivery.handlers.runfolder_handlers import RunfolderHandler
 from delivery.handlers.project_handlers import ProjectHandler, ProjectsForRunfolderHandler
+from delivery.handlers.delivery_handlers import DeliverRunfolderHandler
 
 from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
 
@@ -22,7 +23,9 @@ def routes(**kwargs):
         url(r"/api/1.0/runfolders", RunfolderHandler, name="runfolder", kwargs=kwargs),
         url(r"/api/1.0/projects", ProjectHandler, name="projects", kwargs=kwargs),
         url(r"/api/1.0/runfolder/(.+)/projects", ProjectsForRunfolderHandler,
-            name="projects_for_runfolder", kwargs=kwargs)
+            name="projects_for_runfolder", kwargs=kwargs),
+        url(r"/api/1.0/deliver/runfolder/(.+)", DeliverRunfolderHandler, name="delivery_runfolder", kwargs=kwargs)
+        # TODO Figure out if we want to be able to deliver any type of directory, not just a runfolder
     ]
 
 
