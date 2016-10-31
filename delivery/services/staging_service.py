@@ -29,5 +29,5 @@ class StagingService(object):
         thread = threading.Thread(target=StagingService._copy_dir,
                                   kwargs={"dir_to_copy": dir_to_stage,
                                           "target_directory": os.path.join(self.staging_dir)})
-        #thread.setDaemon(True)
+        # thread.setDaemon(True)
         thread.start()

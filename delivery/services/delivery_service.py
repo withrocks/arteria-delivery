@@ -1,7 +1,7 @@
 
 import logging
 
-from delivery.models.deliveries import DeliveryOrder, DeliveryIdentifier, DeliveryStatus
+from delivery.models.deliveries import DeliveryOrder, DeliveryIdentifier
 from delivery.services.external_program_service import ExternalProgramService
 
 log = logging.getLogger(__name__)
@@ -42,16 +42,12 @@ class MoverDeliveryService(BaseDeliveryService):
         self.external_program_service = ExternalProgramService()
 
     def _deliver(self, delivery_order):
-        # TODO For mover deliveries we will probably have to copy the entire runfolder..
-        #      This means that this might need to have be asynchronous about this...
-        log.debug("Fake delivery to delivery target: {}".format(delivery_order))
-        # TODO
-        return DeliveryStatus(successful=None, msg="Just faking it for now...")
+        pass
 
     def _status_for_delivery_id(self, delivery_id):
         log.debug("Will query Mover about status for delivery id: {}".format(delivery_id.id))
         # TODO
-        return DeliveryStatus(successful=None, msg="Just faking it for now...")
+        pass
 
     def _status_for_delivery_target(self, delivery_target):
         log.debug("Will query Mover about delivery status of directory: {}".format(
