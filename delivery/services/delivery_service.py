@@ -53,4 +53,4 @@ class MoverDeliveryService(BaseDeliveryService):
         log.debug("Will query Mover about delivery status of directory: {}".format(
             delivery_target.delivery_target))
         # TODO
-        return DeliveryStatus(successful=None, msg="Just faking it for now...")
+        pass

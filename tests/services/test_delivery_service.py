@@ -13,8 +13,8 @@ class TestMoverDeliveryService(unittest.TestCase):
 
     def test_deliver(self):
         # TODO Improve test once we have some logic here...
-        delivery_target = MagicMock()
-        delivery_order = DeliveryOrder(delivery_target=delivery_target,
+        delivery_source = 'some/path'
+        delivery_order = DeliveryOrder(delivery_source=delivery_source,
                                        delivery_project="a2009002")
         self.mover_delivery_service.deliver(delivery_order)
 

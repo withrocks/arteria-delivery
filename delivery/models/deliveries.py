@@ -17,10 +17,14 @@ class DeliveryIdentifier(object):
 class DeliveryStatus(base_enum.Enum):
 
     pending = 'pending'
-    staging = 'staging'
-    delivering = 'delivering'
-    successful = 'successful'
-    failed = 'failed'
+
+    staging_in_progress = 'staging_in_progress'
+    staging_successful = 'staging_successful'
+    staging_failed = 'staging_failed'
+
+    delivery_in_progress = 'delivery_in_progress'
+    delivery_finished = 'delivery_successful'
+    delivery_failed = 'delivery_failed'
 
 
 class DeliveryOrder(SQLAlchemyBase):
@@ -28,12 +32,12 @@ class DeliveryOrder(SQLAlchemyBase):
     __tablename__ = 'delivery_orders'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    delivery_target = Column(String)
-    delivery_project = Column(String)
+    delivery_source = Column(String, nullable=False)
+    delivery_project = Column(String, nullable=False)
     delivery_status = Column(Enum(DeliveryStatus))
 
     def __repr__(self):
-        return "Delivery order: {id: %s, target: %s, project: %s, status: %s }" % (str(self.id),
-                                                                                   self.delivery_target,
+        return "Delivery order: {id: %s, source: %s, project: %s, status: %s }" % (str(self.id),
+                                                                                   self.delivery_source,
                                                                                    self.delivery_project,
                                                                                    self.delivery_status)
