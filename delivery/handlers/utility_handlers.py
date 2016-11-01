@@ -11,7 +11,7 @@ class ArteriaDeliveryBaseHandler(BaseRestHandler):
     Base handler for checksum.
     """
 
-    def initialize(self, config):
+    def initialize(self, config, **kwargs):
         """
         Ensures that any parameters feed to this are available
         to subclasses.
