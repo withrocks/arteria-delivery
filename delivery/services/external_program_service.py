@@ -1,5 +1,6 @@
 
 import subprocess
+import atexit
 
 from delivery.models.execution import ExecutionResult, Execution
 
@@ -12,6 +13,9 @@ class ExternalProgramService():
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE)
+        # On exiting the main program, make sure that the subprocess
+        # gets killed.
+        atexit.register(p.terminate)
         return Execution(pid=p.pid, process_obj=p)
 
     @staticmethod
