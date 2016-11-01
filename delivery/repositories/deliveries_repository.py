@@ -8,7 +8,13 @@ class BaseDeliveriesRepository(object):
     Provides interface that needs to be supported by all subclasses
     """
 
-    def get_delivery_order(self, delivery_order_id):
+    def get_delivery_orders_for_source(self, source_directory):
+        raise NotImplementedError("Must be implemented by subclass")
+
+    def get_ongoing_delivery_order_for_source(self, source_directory):
+        raise NotImplementedError("Must be implemented by subclass")
+
+    def get_delivery_order_by_id(self, delivery_order_id):
         raise NotImplementedError("Must be implemented by subclass")
 
     def get_delivery_orders(self):
@@ -27,7 +33,11 @@ class DatabaseBasedDeliveriesRepository(BaseDeliveriesRepository):
         Session = sessionmaker(self.db_handle)
         return Session()
 
-    def get_delivery_order(self, delivery_order_id):
+    def get_delivery_orders_for_source(self, source_directory):
+        session = self._get_session()
+        return session.query(DeliveryOrder).filter(DeliveryOrder.delivery_source == source_directory).all()
+
+    def get_delivery_order_by_id(self, delivery_order_id):
         session = self._get_session()
         return session.query(DeliveryOrder).filter(DeliveryOrder.id == delivery_order_id).one()
 
