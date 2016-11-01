@@ -36,20 +36,20 @@ class TestIntegration(AsyncHTTPTestCase):
     def test_can_return_flowcells(self):
         response = self.fetch(self.API_BASE + "/runfolders")
 
-        self.assertTrue(response.code == 200)
+        self.assertEqual(response.code, 200)
 
         response_json = json.loads(response.body)
-        self.assertTrue(len(response_json) == 1)
+        self.assertEqual(len(response_json), 1)
 
         first_runfolder = response_json["runfolders"][0]
         self.assertEqual(first_runfolder["name"], "160930_ST-E00216_0111_BH37CWALXX")
 
     def test_can_return_projects(self):
         response = self.fetch(self.API_BASE + "/projects")
-        self.assertTrue(response.code == 200)
+        self.assertEqual(response.code, 200)
 
         response_json = json.loads(response.body)
-        self.assertTrue(len(response_json) == 1)
+        self.assertEqual(len(response_json), 1)
 
         first_project = response_json["projects"][0]
         self.assertEqual(first_project["name"], "ABC_123")
