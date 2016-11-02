@@ -56,5 +56,8 @@ class TestStagingRepository(unittest.TestCase):
         self.assertEqual(order.pid, None)
         self.assertEqual(order.source, '/foo')
 
-
+        # Check that the object has been committed, i.e. there are no 'dirty' objects in session
+        self.assertEqual(len(self.session.dirty), 0)
+        order_from_session = self.session.query(StagingOrder).filter(StagingOrder.id == order.id).one()
+        self.assertEqual(order_from_session.id, order.id)
 
