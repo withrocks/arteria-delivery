@@ -1,7 +1,7 @@
 import unittest
 from delivery.services.staging_service import StagingService
 import time
-from delivery.models.deliveries import DeliveryOrder,DeliveryStatus
+from delivery.models.deliveries import DeliveryOrder,StagingStatus
 from delivery.models.execution import ExecutionResult
 
 
@@ -34,13 +34,13 @@ class TestStagingService(unittest.TestCase):
     def test_stage_order(self):
         delivery_order1 = DeliveryOrder(delivery_source='/test/this',
                                         delivery_project='b201782',
-                                        delivery_status=DeliveryStatus.pending)
+                                        delivery_status=StagingStatus.pending)
 
         self.staging_service.stage_order(delivery_order=delivery_order1)
         def _get_delivery_status():
             return delivery_order1.delivery_status
 
-        self._eventually_equals(1, _get_delivery_status, DeliveryStatus.staging_successful)
+        self._eventually_equals(1, _get_delivery_status, StagingStatus.staging_successful)
 
     def test_stage_order_non_valid_state(self):
         with self.assertRaises(Exception):

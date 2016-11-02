@@ -2,7 +2,7 @@
 import threading
 import os
 
-from delivery.models.deliveries import DeliveryStatus
+from delivery.models.deliveries import StagingStatus
 
 
 class StagingService(object):
@@ -29,19 +29,19 @@ class StagingService(object):
 
             # TODO Add logging here..
             if execution_result.status_code == 0:
-                delivery_order.delivery_status = DeliveryStatus.staging_successful
+                delivery_order.delivery_status = StagingStatus.staging_successful
             else:
-                delivery_order.delivery_status = DeliveryStatus.delivery_failed
+                delivery_order.delivery_status = StagingStatus.delivery_failed
 
         # TODO Better exception handling here...
         except Exception as e:
-            delivery_order.delivery_status = DeliveryStatus.delivery_failed
+            delivery_order.delivery_status = StagingStatus.delivery_failed
             raise e
 
     def stage_order(self, delivery_order):
 
-        if delivery_order.delivery_status == DeliveryStatus.pending:
-            delivery_order.delivery_status = DeliveryStatus.staging_in_progress
+        if delivery_order.delivery_status == StagingStatus.pending:
+            delivery_order.delivery_status = StagingStatus.staging_in_progress
 
             thread = threading.Thread(target=StagingService._copy_dir,
                                       kwargs={"delivery_order": delivery_order,

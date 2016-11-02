@@ -6,6 +6,28 @@ import enum as base_enum
 
 SQLAlchemyBase = declarative_base()
 
+class StagingStatus(base_enum.Enum):
+
+    pending = 'pending'
+
+    staging_in_progress = 'staging_in_progress'
+    staging_successful = 'staging_successful'
+    staging_failed = 'staging_failed'
+
+class StagingOrder(SQLAlchemyBase):
+
+    __tablename__ = 'staging_orders'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source = Column(String, nullable=False)
+    status = Column(Enum(StagingStatus), nullable=False)
+    pid = Column(Integer)
+
+    def __repr__(self):
+        return "Staging order: {id: %s, source: %s, status: %s, pid: %s }" % (str(self.id),
+                                                                              self.source,
+                                                                              self.status,
+                                                                              self.pid)
 
 class DeliveryIdentifier(object):
     # TODO Evaluate if we should use this or not, depends on how Mover will work
@@ -18,14 +40,9 @@ class DeliveryStatus(base_enum.Enum):
 
     pending = 'pending'
 
-    staging_in_progress = 'staging_in_progress'
-    staging_successful = 'staging_successful'
-    staging_failed = 'staging_failed'
-
     delivery_in_progress = 'delivery_in_progress'
     delivery_finished = 'delivery_successful'
     delivery_failed = 'delivery_failed'
-
 
 class DeliveryOrder(SQLAlchemyBase):
 
