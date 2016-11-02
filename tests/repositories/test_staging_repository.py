@@ -13,36 +13,48 @@ from delivery.repositories.staging_repository import DatabaseBasedStagingReposit
 
 class TestStagingRepository(unittest.TestCase):
 
-    engine = create_engine('sqlite:///:memory:', echo=True)
-    repo = DatabaseBasedDeliveriesRepository(database_engine_handle=engine)
 
-    SQLAlchemyBase.metadata.create_all(engine)
 
-    # Throw some data into the in-memory db
-    Session = sessionmaker()
-    Session.configure(bind=engine)
+    def setUp(self):
+        engine = create_engine('sqlite:///:memory:', echo=True)
+        SQLAlchemyBase.metadata.create_all(engine)
 
-    session = Session()
+        # Throw some data into the in-memory db
+        session_factory = sessionmaker()
+        session_factory.configure(bind=engine)
 
-    staging_order_1 = StagingOrder(source='foo', status=StagingStatus.pending)
-    session.add(staging_order_1)
+        self.session = session_factory()
 
-    session.commit()
+        self.staging_order_1 = StagingOrder(source='foo', status=StagingStatus.pending)
+        self.session.add(self.staging_order_1)
 
-    print session.query(StagingOrder).all()
-    print session.dirty
+        self.session.commit()
 
-    # Prep the repo
-    staging_repo = DatabaseBasedStagingRepository(engine)
+        # Prep the repo
+        self.staging_repo = DatabaseBasedStagingRepository(self.session)
 
+    ###
+    ### A database backed staging repository should able to:
+    ### - get staging orders by source
     def test_get_staging_orders_by_source(self):
         actual = self.staging_repo.get_staging_order_by_source(self.staging_order_1.source)
-        self.assertEquals(self.staging_order_1, actual)
+        self.assertEqual(len(actual), 1)
+        self.assertEqual(self.staging_order_1.id, actual[0].id)
+
+    ### - get staging orders by id
+    def test_get_staging_orders_by_id(self):
+        actual = self.staging_repo.get_staging_order_by_id(self.staging_order_1.id)
+        self.assertEqual(self.staging_order_1.id, actual.id)
+
+    ### - create a new staging_order and persist it to the db
+    def test_create_staging_order(self):
+        order = self.staging_repo.create_staging_order(source='/foo', status=StagingStatus.pending)
+
+        self.assertIsInstance(order, StagingOrder)
+        self.assertEqual(order.status, StagingStatus.pending)
+        self.assertEqual(order.id, 2)
+        self.assertEqual(order.pid, None)
+        self.assertEqual(order.source, '/foo')
 
 
-###
-### A database backed staging repository should able to:
-### - get staging orders by source
-### - get staging orders by id
-### - change state of a staging order to any permitted stage
-### - associate a staging order with a pid
+
