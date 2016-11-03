@@ -72,7 +72,7 @@ class FileSystemBasedRunfolderRepository(object):
         matching_name = [r for r in runfolders if r.name == runfolder]
         if len(matching_name) > 1:
             raise AssertionError("Found more than 1 runfolder matching: ".format(r))
-        if matching_name[0]:
+        if len(matching_name) > 0 and matching_name[0]:
             return matching_name[0]
         else:
             return None
