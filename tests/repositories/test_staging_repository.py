@@ -6,17 +6,17 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from delivery.repositories.deliveries_repository import DatabaseBasedDeliveriesRepository
 from delivery.models.deliveries import SQLAlchemyBase, StagingOrder, StagingStatus
-
 from delivery.repositories.staging_repository import DatabaseBasedStagingRepository
+
 
 class TestStagingRepository(unittest.TestCase):
 
-
-
     def setUp(self):
-        engine = create_engine('sqlite:///:memory:', echo=True)
+        # NOTE setting echo to true is very useful to se which sql statements get
+        # executed, but since it fills up the logs a lot it's been disabled by
+        # default here.
+        engine = create_engine('sqlite:///:memory:', echo=False)
         SQLAlchemyBase.metadata.create_all(engine)
 
         # Throw some data into the in-memory db
@@ -31,7 +31,7 @@ class TestStagingRepository(unittest.TestCase):
         self.session.commit()
 
         # Prep the repo
-        self.staging_repo = DatabaseBasedStagingRepository(self.session)
+        self.staging_repo = DatabaseBasedStagingRepository(session_factory)
 
     ###
     ### A database backed staging repository should able to:
