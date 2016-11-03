@@ -1,4 +1,5 @@
 
+import json
 from tornado.web import HTTPError
 
 from arteria.web.handlers import BaseRestHandler
@@ -7,15 +8,10 @@ from arteria.web.handlers import BaseRestHandler
 from delivery.models.deliveries import DeliveryOrder
 
 
-
-
 class StagingRunfolderHandler(BaseRestHandler):
 
-    def initialize(self, staging_service, runfolder_repo, deliveries_repository, **kwargs):
+    def initialize(self, staging_service, **kwargs):
         self.staging_service = staging_service
-        self.runfolder_repo = runfolder_repo
-        self.deliveries_repo = deliveries_repository
-
 
     def post(self, runfolder_id):
         """
@@ -23,41 +19,37 @@ class StagingRunfolderHandler(BaseRestHandler):
         :param runfolder_id:
         :return:
         """
-        request_data = self.body_as_object(["delivery_project_id"])
-        delivery_project_id = request_data.get("delivery_project_id")
-        projects_to_deliver = request_data.get("projects", [])
+        try:
+            request_data = self.body_as_object()
+        except ValueError:
+            request_data = {}
 
-        runfolder = self.runfolder_repo.get_runfolder(runfolder_id)
+        projects_to_stage = request_data.get("projects", [])
 
-        if not runfolder:
-            raise HTTPError(404, reason="Couldn't find runfolder matching: {}".format(runfolder_id))
+        staging_order_ids = self.staging_service.stage_runfolder(runfolder_id, projects_to_stage)
+        status_end_points = map(lambda order_id: "{0}://{1}{2}".format(self.request.protocol,
+                                                                       self.request.host,
+                                                                       self.reverse_url("stage_status", order_id)),
+                                staging_order_ids)
 
-        # If no projects have been specified, stage all projects
-        if not projects_to_deliver:
-            projects_to_deliver = runfolder.projects
-
-        for project in runfolder.projects:
-            if project in projects_to_deliver:
-                existing_delivery_orders = self.deliveries_repo.get_delivery_orders_for_source(project.path)
+        self.write_json({'staging_order_links': status_end_points})
 
 
-        # TODO Check repository for delivery orders matching the given runfolder
+class StagingHandler(BaseRestHandler):
 
-        # TODO This creation should probably happen via repository instead!
-        #delivery_orders = create_delivery_orders_from_runfolder(runfolder, projects_to_deliver, delivery_project_id)
+    def initialize(self, staging_service, **kwargs):
+        self.staging_service = staging_service
 
-        for delivery_order in delivery_orders:
-            self.staging_service.stage_order(delivery_order)
-
-
-        # TODO!
-        self.write_object({'yes': 'no'})
-
-    # TODO Change this!
-    def get(self, runfolder_id):
+    def get(self, stage_id):
         """
-        TODO
-        :param runfolder_id:
-        :return:
+        Returns the current status of the of the staging order, or 404 if the order is unknown.
+        Possible values for status are: pending, staging_in_progress, staging_successful, staging_failed
         """
+        status = self.staging_service.get_status_of_stage_order(stage_id)
+        if status:
+            self.write_json({'status': status.name})
+        else:
+            self.set_status(404, reason='No stage order with id: {} found.'.format(stage_id))
+
+    def delete(self, stage_id):
         pass
