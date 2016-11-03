@@ -1,9 +1,13 @@
 
+import logging
 import threading
 import os
 
-from delivery.models.deliveries import StagingStatus, StagingOrder
+from delivery.models.deliveries import StagingStatus
 from delivery.exceptions import RunfolderNotFoundException,InvalidStatusException
+
+log = logging.getLogger(__name__)
+
 
 class StagingService(object):
 
@@ -13,7 +17,6 @@ class StagingService(object):
     # acts as a singleton, look at: http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 
     def __init__(self, staging_dir, external_program_service, staging_repo, runfolder_repo, session_factory):
-        # TODO Figure our how to handle db session!
         self.staging_dir = staging_dir
         self.external_program_service = external_program_service
         self.staging_repo = staging_repo
@@ -43,17 +46,21 @@ class StagingService(object):
 
             execution_result = external_program_service.wait_for_execution(execution)
 
-            # TODO Add logging here..
             if execution_result.status_code == 0:
                 staging_order.status = StagingStatus.staging_successful
                 session.commit()
+                log.info("Successfully staged: {}".format(staging_order))
             else:
                 staging_order.status = StagingStatus.staging_failed
                 session.commit()
+                log.info("Failed in staging: {} because rsync returned exit code: {}".
+                         format(staging_order, execution_result.status_code))
 
         # TODO Better exception handling here...
         except Exception as e:
             staging_order.status = StagingStatus.staging_failed
+            log.info("Failed in staging: {} because this exeception was logged: {}".
+                     format(staging_order, e))
         finally:
             # Always commit the state change to the database
             session.commit()
@@ -105,10 +112,10 @@ class StagingService(object):
         stage_order_ids = []
         for project in runfolder.projects:
             if project in projects_to_stage:
-
                 # TODO Verify that there is no currently ongoing staging order before creating a new one...
                 staging_order = self.staging_repo.create_staging_order(source=project.path,
                                                                        status=StagingStatus.pending)
+                log.debug("Created a staging order: {}".format(staging_order))
                 self.stage_order(staging_order)
                 stage_order_ids.append(staging_order.id)
 
