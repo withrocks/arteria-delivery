@@ -2,6 +2,7 @@
 import logging
 import threading
 import os
+import signal
 
 from delivery.models.deliveries import StagingStatus
 from delivery.exceptions import RunfolderNotFoundException,InvalidStatusException
@@ -121,4 +122,43 @@ class StagingService(object):
 
         return stage_order_ids
 
+    def get_status_of_stage_order(self, stage_order_id):
+        stage_order = self.staging_repo.get_staging_order_by_id(stage_order_id)
+        if stage_order:
+            return stage_order.status
+        else:
+            return None
 
+    def kill_process_of_staging_order(self, stage_order_id):
+        """
+        Attempt to kill the process of the stage order.
+        Will only kill stage orders which have a 'staging_in_progress' status.
+        :param stage_order_id:
+        :return: True if the process was killed successfully, otherwise False
+        """
+        session = self.session_factory()
+        stage_order = self.staging_repo.get_staging_order_by_id(stage_order_id, session)
+
+        if not stage_order:
+            return False
+
+        try:
+            if stage_order.status != StagingStatus.staging_in_progress:
+                raise InvalidStatusException("Can only kill processes where the staging order is 'staging_in_progress'")
+
+            os.kill(stage_order.pid, signal.SIGTERM)
+
+        except OSError:
+            log.debug("Failed to kill process with pid: {} associated with staging order: {} ".
+                      format(stage_order.id, stage_order.pid))
+            return False
+        except InvalidStatusException:
+            log.warning("Tried to kill process for staging order: {}, but didn't to it because it's status did not make"
+                        "it eligible for killing.".format(stage_order.id))
+            return False
+        else:
+            log.debug("Successfully killed process with pid: {} associated with staging order: {} ".
+                      format(stage_order.id, stage_order.pid))
+            stage_order.status = StagingStatus.staging_failed
+            session.commit()
+            return True
