@@ -1,8 +1,9 @@
 
+import time
+from mock import MagicMock
+
 from delivery.models.project import Project
 from delivery.models.runfolder import Runfolder
-
-from mock import MagicMock
 
 
 class TestUtils:
@@ -47,3 +48,19 @@ _runfolder2.projects = [Project(name="ABC_123",
 
 
 FAKE_RUNFOLDERS = [_runfolder1, _runfolder2]
+
+
+def assert_eventually_equals(self, timeout, f, expected, delay=0.1):
+    start_time = time.time()
+
+    while True:
+        try:
+            value = f()
+            self.assertEquals(value, expected)
+            break
+        except AssertionError:
+            if time.time() - start_time <= timeout:
+                time.sleep(delay)
+                continue
+            else:
+                raise

@@ -8,7 +8,7 @@ from delivery.exceptions import InvalidStatusException, RunfolderNotFoundExcepti
 from delivery.services.staging_service import StagingService
 from delivery.models.deliveries import StagingOrder, StagingStatus
 from delivery.models.execution import ExecutionResult, Execution
-from tests.test_utils import FAKE_RUNFOLDERS
+from tests.test_utils import FAKE_RUNFOLDERS, assert_eventually_equals
 
 
 class TestStagingService(unittest.TestCase):
@@ -52,21 +52,6 @@ class TestStagingService(unittest.TestCase):
                                               self.mock_runfolder_repo,
                                               mock_db_session_factory)
 
-    def _eventually_equals(self, timeout, f, expected, delay=0.1):
-        start_time = time.time()
-
-        while True:
-            try:
-                value = f()
-                self.assertEquals(value, expected)
-                break
-            except AssertionError:
-                if time.time() - start_time <= timeout:
-                    time.sleep(delay)
-                    continue
-                else:
-                    raise
-
     # A StagingService should be able to:
     # - Stage a staging order
     def test_stage_order(self):
@@ -74,7 +59,7 @@ class TestStagingService(unittest.TestCase):
         def _get_stating_status():
             return self.staging_order1.status
 
-        self._eventually_equals(1, _get_stating_status, StagingStatus.staging_successful)
+        assert_eventually_equals(self, 1, _get_stating_status, StagingStatus.staging_successful)
 
     # - Set status to failed if rsyncing is not successful
     def test_unsuccessful_staging_order(self):
@@ -86,7 +71,7 @@ class TestStagingService(unittest.TestCase):
         def _get_stating_status():
             return self.staging_order1.status
 
-        self._eventually_equals(1, _get_stating_status, StagingStatus.staging_failed)
+        assert_eventually_equals(self, 1, _get_stating_status, StagingStatus.staging_failed)
 
     # - Set status to failed if there is an exception is not successful
     def test_exception_in_staging_order(self):
@@ -98,7 +83,7 @@ class TestStagingService(unittest.TestCase):
         def _get_stating_status():
             return self.staging_order1.status
 
-        self._eventually_equals(1, _get_stating_status, StagingStatus.staging_failed)
+        assert_eventually_equals(self, 1, _get_stating_status, StagingStatus.staging_failed)
 
     # - Reject staging order if it has invalid state
     def test_stage_order_non_valid_state(self):
