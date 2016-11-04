@@ -60,7 +60,7 @@ class StagingService(object):
         # TODO Better exception handling here...
         except Exception as e:
             staging_order.status = StagingStatus.staging_failed
-            log.info("Failed in staging: {} because this exeception was logged: {}".
+            log.info("Failed in staging: {} because this exception was logged: {}".
                      format(staging_order, e))
         finally:
             # Always commit the state change to the database
