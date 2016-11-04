@@ -149,7 +149,7 @@ class StagingService(object):
             os.kill(stage_order.pid, signal.SIGTERM)
 
         except OSError:
-            log.debug("Failed to kill process with pid: {} associated with staging order: {} ".
+            log.error("Failed to kill process with pid: {} associated with staging order: {} ".
                       format(stage_order.id, stage_order.pid))
             return False
         except InvalidStatusException:
