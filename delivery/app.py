@@ -47,13 +47,7 @@ def routes(**kwargs):
     ]
 
 
-def start():
-    """
-    Start the delivery-ws app
-    """
-    app_svc = AppService.create(__package__)
-    config = app_svc.config_svc
-
+def compose_application(config):
     runfolder_repo = FileSystemBasedRunfolderRepository(
         config["monitored_directory"])
     external_program_service = ExternalProgramService()
@@ -74,7 +68,20 @@ def start():
 
     delivery_service = MoverDeliveryService(external_program_service)
 
-    app_svc.start(routes(config=config,
-                         runfolder_repo=runfolder_repo,
-                         delivery_service=delivery_service,
-                         staging_service=staging_service))
+    return dict(config=config,
+                runfolder_repo=runfolder_repo,
+                external_program_service=external_program_service,
+                staging_service=staging_service,
+                delivery_service=delivery_service)
+
+
+def start():
+    """
+    Start the delivery-ws app
+    """
+    app_svc = AppService.create(__package__)
+    config = app_svc.config_svc
+
+    composed_service = compose_application(config)
+
+    app_svc.start(routes(**composed_service))
