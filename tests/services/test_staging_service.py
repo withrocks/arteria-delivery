@@ -2,7 +2,7 @@ import unittest
 import mock
 import time
 import random
-
+import signal
 
 from delivery.exceptions import InvalidStatusException, RunfolderNotFoundException
 from delivery.services.staging_service import StagingService
@@ -15,16 +15,20 @@ class TestStagingService(unittest.TestCase):
 
     class MockExternalRunnerService():
 
-        @staticmethod
-        def run(cmd):
+        def __init__(self, return_status=0, throw=False):
+            self.return_status = return_status
+            self.throw = throw
+
+        def run(self, cmd):
+            if self.throw:
+                raise Exception("Test the exception handling...")
             mock_process = mock.MagicMock()
             execution = Execution(pid=random.randint(1, 1000), process_obj=mock_process)
             return execution
 
-        @staticmethod
-        def wait_for_execution(execution):
+        def wait_for_execution(self, execution):
             time.sleep(0.1)
-            return ExecutionResult(status_code=0,
+            return ExecutionResult(status_code=self.return_status,
                                    stderr="stderr",
                                    stdout="stdout")
 
@@ -72,6 +76,30 @@ class TestStagingService(unittest.TestCase):
 
         self._eventually_equals(1, _get_stating_status, StagingStatus.staging_successful)
 
+    # - Set status to failed if rsyncing is not successful
+    def test_unsuccessful_staging_order(self):
+        mock_external_runner_service = self.MockExternalRunnerService(return_status=1)
+        self.staging_service.external_program_service = mock_external_runner_service
+
+        self.staging_service.stage_order(stage_order=self.staging_order1)
+
+        def _get_stating_status():
+            return self.staging_order1.status
+
+        self._eventually_equals(1, _get_stating_status, StagingStatus.staging_failed)
+
+    # - Set status to failed if there is an exception is not successful
+    def test_exception_in_staging_order(self):
+        mock_external_runner_service = self.MockExternalRunnerService(throw=True)
+        self.staging_service.external_program_service = mock_external_runner_service
+
+        self.staging_service.stage_order(stage_order=self.staging_order1)
+
+        def _get_stating_status():
+            return self.staging_order1.status
+
+        self._eventually_equals(1, _get_stating_status, StagingStatus.staging_failed)
+
     # - Reject staging order if it has invalid state
     def test_stage_order_non_valid_state(self):
         with self.assertRaises(InvalidStatusException):
@@ -99,21 +127,12 @@ class TestStagingService(unittest.TestCase):
 
         runfolder1 = FAKE_RUNFOLDERS[0]
 
-        mock_external_runner_service = self.MockExternalRunnerService()
+        self.mock_runfolder_repo.get_runfolder.return_value = runfolder1
         mock_staging_repo = MockStagingRepo()
 
-        mock_runfolder_repo = mock.MagicMock()
-        mock_runfolder_repo.get_runfolder.return_value = runfolder1
+        self.staging_service.staging_repo = mock_staging_repo
 
-        mock_db_session_factory = mock.MagicMock()
-
-        staging_service = StagingService("/tmp",
-                                         mock_external_runner_service,
-                                         mock_staging_repo,
-                                         mock_runfolder_repo,
-                                         mock_db_session_factory)
-
-        result = staging_service.stage_runfolder(runfolder_id=runfolder1.name, projects_to_stage=[])
+        result = self.staging_service.stage_runfolder(runfolder_id=runfolder1.name, projects_to_stage=[])
         self.assertEqual(result, map(lambda x: x.id, mock_staging_repo.orders_state))
 
 
@@ -123,4 +142,43 @@ class TestStagingService(unittest.TestCase):
 
             self.mock_runfolder_repo.get_runfolder.return_value = None
             self.staging_service.stage_runfolder(runfolder_id='foo_runfolder', projects_to_stage=[])
+
+    # - Be able to get the status of a stage order
+    def test_get_status_or_stage_order(self):
+        # Returns correctly for existing order
+        actual = self.staging_service.get_status_of_stage_order(self.staging_order1.id)
+        self.assertEqual(actual, self.staging_order1.status)
+
+        # Returns None for none existent order
+        mock_staging_repo = mock.MagicMock()
+        mock_staging_repo.get_staging_order_by_id.return_value = None
+        self.staging_service.staging_repo = mock_staging_repo
+        actual_not_there = self.staging_service.get_status_of_stage_order(1337)
+        self.assertIsNone(actual_not_there)
+
+    # - Be able to kill a ongoing staging process
+    @mock.patch('delivery.services.staging_service.os')
+    def test_kill_stage_order(self, mock_os):
+
+        # If the status is in progress it should be possible to kill it.
+        self.staging_order1.status = StagingStatus.staging_in_progress
+        self.staging_order1.pid = 1337
+        actual = self.staging_service.kill_process_of_staging_order(self.staging_order1.id)
+        mock_os.kill.assert_called_with(self.staging_order1.pid, signal.SIGTERM)
+        self.assertTrue(actual)
+
+        # It should handle if kill raises a OSError gracefully
+        self.staging_order1.status = StagingStatus.staging_in_progress
+        self.staging_order1.pid = 1337
+        mock_os.kill.side_effect = OSError
+        actual = self.staging_service.kill_process_of_staging_order(self.staging_order1.id)
+        mock_os.kill.assert_called_with(self.staging_order1.pid, signal.SIGTERM)
+        self.assertFalse(actual)
+
+        # If the status is not in progress it should not be possible to kill it.
+        self.staging_order1.status = StagingStatus.staging_successful
+        actual = self.staging_service.kill_process_of_staging_order(self.staging_order1.id)
+        mock_os.kill.assert_not_called()
+        self.assertFalse(actual)
+
 
