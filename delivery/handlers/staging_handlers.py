@@ -1,8 +1,12 @@
 
 import json
+import logging
+
 from tornado.web import HTTPError
 
 from arteria.web.handlers import BaseRestHandler
+
+log = logging.getLogger(__name__)
 
 
 from delivery.models.deliveries import DeliveryOrder
@@ -19,6 +23,9 @@ class StagingRunfolderHandler(BaseRestHandler):
         :param runfolder_id:
         :return:
         """
+
+        log.debug("Trying to stage runfolder with id: {}".format(runfolder_id))
+
         try:
             request_data = self.body_as_object()
         except ValueError:
@@ -53,6 +60,11 @@ class StagingHandler(BaseRestHandler):
             self.set_status(404, reason='No stage order with id: {} found.'.format(stage_id))
 
     def delete(self, stage_id):
+        """
+        Kill a stage order with the give id.
+        :param stage_id: staging id for which to kill the associated process
+        :return: status 204 for successfully killing the process and 500 if the process was not killed
+        """
         was_killed = self.staging_service.kill_process_of_stage_order(stage_id)
         if was_killed:
             self.set_status(204)
