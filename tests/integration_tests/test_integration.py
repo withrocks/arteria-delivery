@@ -74,7 +74,7 @@ class TestIntegration(AsyncHTTPTestCase):
             def _get_delivery_status():
                 self.http_client.fetch(link, self.stop)
                 status_response = self.wait()
-                return json.loads(status_response.body)t sta["status"]
+                return json.loads(status_response.body)["status"]
 
             assert_eventually_equals(self,
                                      timeout=5,
