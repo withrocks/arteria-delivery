@@ -12,11 +12,12 @@ from arteria.web.app import AppService
 from delivery.handlers.utility_handlers import VersionHandler
 from delivery.handlers.runfolder_handlers import RunfolderHandler
 from delivery.handlers.project_handlers import ProjectHandler, ProjectsForRunfolderHandler
-from delivery.handlers.delivery_handlers import DeliverRunfolderHandler
+from delivery.handlers.delivery_handlers import DeliverByStageIdHandler
 from delivery.handlers.staging_handlers import StagingRunfolderHandler, StagingHandler
 
 from delivery.repositories.runfolder_repository import FileSystemBasedRunfolderRepository
 from delivery.repositories.staging_repository import DatabaseBasedStagingRepository
+from delivery.repositories.deliveries_repository import DatabaseBasedDeliveriesRepository
 
 from delivery.services.delivery_service import MoverDeliveryService
 from delivery.services.external_program_service import ExternalProgramService
@@ -45,7 +46,7 @@ def routes(**kwargs):
         url(r"/api/1.0/stage/(\d+)", StagingHandler, name="stage_status", kwargs=kwargs),
 
         # TODO Should deliver by stage id!
-        url(r"/api/1.0/deliver/runfolder/(.+)", DeliverRunfolderHandler,
+        url(r"/api/1.0/deliver/stage_id/(.+)", DeliverByStageIdHandler,
             name="delivery_runfolder", kwargs=kwargs)
     ]
 
@@ -82,7 +83,11 @@ def compose_application(config):
                                      staging_dir=config["staging_directory"],
                                      session_factory=session_factory)
 
-    delivery_service = MoverDeliveryService(external_program_service)
+    delivery_repo = DatabaseBasedDeliveriesRepository(session_factory=session_factory)
+
+    delivery_service = MoverDeliveryService(external_program_service=external_program_service,
+                                            staging_service=staging_service,
+                                            delivery_repo=delivery_repo)
 
     return dict(config=config,
                 runfolder_repo=runfolder_repo,

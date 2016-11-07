@@ -50,6 +50,9 @@ class DeliveryOrder(SQLAlchemyBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     delivery_source = Column(String, nullable=False)
     delivery_project = Column(String, nullable=False)
+
+    # TODO Depending on how Mover will work we might not
+    # store the delivery status here, but rather poll Mover about it...
     delivery_status = Column(Enum(DeliveryStatus))
     # TODO This should really be enforcing a foreign key constraint
     # against the staging order table, but this does not seem to

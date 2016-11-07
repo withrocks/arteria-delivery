@@ -1,56 +1,34 @@
 
 import logging
 
-from delivery.models.db_models import DeliveryOrder, DeliveryIdentifier
-from delivery.services.external_program_service import ExternalProgramService
+from delivery.exceptions import InvalidStatusException
+from delivery.models.db_models import StagingStatus, DeliveryStatus
 
 log = logging.getLogger(__name__)
 
 
-class BaseDeliveryService(object):
+class MoverDeliveryService(object):
 
-    def deliver(self, delivery_order):
-        if isinstance(delivery_order, DeliveryOrder):
-            return self._deliver(delivery_order)
-        else:
-            raise NotImplementedError("Only DeliveryOrder is valid input to the deliver method")
-
-    def _deliver(self, delivery_order):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def status(self, delivery_target_or_delivery_id):
-        if isinstance(delivery_target_or_delivery_id, DeliveryOrder):
-            log.debug("Got a delivery order, will try to find the status for it...")
-            return self._status(delivery_target_or_delivery_id)
-        elif isinstance(delivery_target_or_delivery_id, DeliveryIdentifier):
-            log.debug("Got a delivery identifier, will try to find status for it...")
-            return self._status_for_delivery_id(delivery_target_or_delivery_id)
-        else:
-            raise NotImplementedError("{} is not a valid type for checking the the status of a delivery".format(
-                type(delivery_target_or_delivery_id)))
-
-    def _status_for_delivery_target(self):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def _status_for_delivery_id(self):
-        raise NotImplementedError("Must be implemented by subclass")
-
-
-class MoverDeliveryService(BaseDeliveryService):
-
-    def __init__(self, external_program_service):
+    def __init__(self, external_program_service, staging_service, delivery_repo):
         self.external_program_service = external_program_service
+        self.staging_service = staging_service
+        self.delivery_repo = delivery_repo
 
-    def _deliver(self, delivery_order):
+    def deliver_by_staging_id(self, staging_id, delivery_project):
+
+        stage_order = self.staging_service.get_stage_order_by_id(staging_id)
+        if not stage_order or stage_order.status == StagingStatus.staging_successful:
+            raise InvalidStatusException("Only deliver by staging_id if it has a successful status!")
+
+        # TODO Adjust staging_target to fit with exactly what we want to deliver
+        delivery_order = self.delivery_repo.create_delivery_order(delivery_source=stage_order.staging_target,
+                                                                  delivery_project=delivery_project,
+                                                                  delivery_status=DeliveryStatus.pending,
+                                                                  staging_order_id=staging_id)
+
+        # TODO We need to figure out how to handle this once we know something about
+        # how mover works...
+
+    def get_status_of_delivery_order(self, delivery_order_id):
         pass
 
-    def _status_for_delivery_id(self, delivery_id):
-        log.debug("Will query Mover about status for delivery id: {}".format(delivery_id.id))
-        # TODO
-        pass
-
-    def _status_for_delivery_target(self, delivery_target):
-        log.debug("Will query Mover about delivery status of directory: {}".format(
-            delivery_target.delivery_target))
-        # TODO
-        pass

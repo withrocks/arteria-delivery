@@ -122,8 +122,12 @@ class StagingService(object):
 
         return stage_order_ids
 
-    def get_status_of_stage_order(self, stage_order_id):
+    def get_stage_order_by_id(self, stage_order_id):
         stage_order = self.staging_repo.get_staging_order_by_id(stage_order_id)
+        return stage_order
+
+    def get_status_of_stage_order(self, stage_order_id):
+        stage_order = self.get_stage_order_by_id(stage_order_id)
         if stage_order:
             return stage_order.status
         else:

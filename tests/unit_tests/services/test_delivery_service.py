@@ -4,24 +4,34 @@ from mock import MagicMock
 from delivery.services.delivery_service import MoverDeliveryService
 from delivery.models.db_models import DeliveryOrder
 from delivery.models.runfolder import Runfolder
+from delivery.exceptions import InvalidStatusException
 
 
 class TestMoverDeliveryService(unittest.TestCase):
 
-    mock_external_program_service = MagicMock()
-    mover_delivery_service = MoverDeliveryService(mock_external_program_service)
+    def setUp(self):
 
-    def test_deliver(self):
-        # TODO Improve test once we have some logic here...
-        delivery_source = 'some/path'
-        delivery_order = DeliveryOrder(delivery_source=delivery_source,
-                                       delivery_project="a2009002")
-        self.mover_delivery_service.deliver(delivery_order)
+        self.mock_external_program_service = MagicMock()
+        self.mock_staging_service = MagicMock()
+        self.mock_delivery_repo = MagicMock()
+        self.mover_delivery_service = MoverDeliveryService(external_program_service=self.mock_external_program_service,
+                                                           staging_service=self.mock_staging_service,
+                                                           delivery_repo=self.mock_delivery_repo)
 
-    def test__status_for_delivery_id(self):
-        # TODO Improve test once we have some logic here...
+    def test_deliver_by_staging_id(self):
+        # TODO
         pass
 
-    def test__status_for_delivery_target(self):
-        # TODO Improve test once we have some logic here...
+    def test_deliver_by_staging_id_raises_on_non_existent_stage_id(self):
+        self.mock_staging_service.get_stage_order_by_id.return_value = None
+
+        with self.assertRaises(InvalidStatusException):
+
+            self.mover_delivery_service.deliver_by_staging_id(staging_id=1,
+                                                              delivery_project='foo')
+
+        pass
+
+    def test_get_status_of_delivery_order(self):
+        # TODO
         pass
