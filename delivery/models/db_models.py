@@ -24,6 +24,7 @@ class StagingOrder(SQLAlchemyBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     source = Column(String, nullable=False)
     status = Column(Enum(StagingStatus), nullable=False)
+    staging_target = Column(String)
     pid = Column(Integer)
 
     def __repr__(self):

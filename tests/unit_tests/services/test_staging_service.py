@@ -105,9 +105,12 @@ class TestStagingService(unittest.TestCase):
             def get_staging_order_by_id(self, identifier, custom_session=None):
                 return filter(lambda x: x.id == identifier, self.orders_state)[0]
 
-            def create_staging_order(self, source, status):
+            def create_staging_order(self, source, status, staging_target_dir):
 
-                order = StagingOrder(id=len(self.orders_state) + 1, source=source, status=status)
+                order = StagingOrder(id=len(self.orders_state) + 1,
+                                     source=source,
+                                     status=status,
+                                     staging_target=staging_target_dir)
                 self.orders_state.append(order)
                 return order
 

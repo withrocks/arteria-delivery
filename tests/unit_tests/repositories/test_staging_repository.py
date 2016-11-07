@@ -25,7 +25,9 @@ class TestStagingRepository(unittest.TestCase):
 
         self.session = session_factory()
 
-        self.staging_order_1 = StagingOrder(source='foo', status=StagingStatus.pending)
+        self.staging_order_1 = StagingOrder(source='foo',
+                                            status=StagingStatus.pending,
+                                            staging_target='foo/target')
         self.session.add(self.staging_order_1)
 
         self.session.commit()
@@ -48,13 +50,16 @@ class TestStagingRepository(unittest.TestCase):
 
     # - create a new staging_order and persist it to the db
     def test_create_staging_order(self):
-        order = self.staging_repo.create_staging_order(source='/foo', status=StagingStatus.pending)
+        order = self.staging_repo.create_staging_order(source='/foo',
+                                                       status=StagingStatus.pending,
+                                                       staging_target_dir='/foo/target')
 
         self.assertIsInstance(order, StagingOrder)
         self.assertEqual(order.status, StagingStatus.pending)
         self.assertEqual(order.id, 2)
         self.assertEqual(order.pid, None)
         self.assertEqual(order.source, '/foo')
+        self.assertEqual(order.staging_target, '/foo/target/2_foo')
 
         # Check that the object has been committed, i.e. there are no 'dirty' objects in session
         self.assertEqual(len(self.session.dirty), 0)

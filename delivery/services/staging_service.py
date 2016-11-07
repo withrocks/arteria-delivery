@@ -26,7 +26,7 @@ class StagingService(object):
         self.session_factory = session_factory
 
     @staticmethod
-    def _copy_dir(staging_order_id, external_program_service, staging_dir, session_factory, staging_repo):
+    def _copy_dir(staging_order_id, external_program_service, session_factory, staging_repo):
         session = session_factory()
 
         # This is a somewhat hacky work-around to the problem that objects created in one
@@ -35,11 +35,7 @@ class StagingService(object):
         staging_order = staging_repo.get_staging_order_by_id(staging_order_id, session)
         try:
 
-            staging_target = os.path.join(staging_dir,
-                                          "{}_{}".format(staging_order.id,
-                                                         os.path.basename(staging_order.source)))
-
-            cmd = ['rsync', '-r', staging_order.source, staging_target]
+            cmd = ['rsync', '-r', staging_order.source, staging_order.staging_target]
 
             execution = external_program_service.run(cmd)
 
@@ -84,7 +80,6 @@ class StagingService(object):
                                       kwargs={"staging_order_id": stage_order.id,
                                               "external_program_service": self.external_program_service,
                                               "staging_repo": self.staging_repo,
-                                              "staging_dir": self.staging_dir,
                                               "session_factory": self.session_factory})
 
             # When only daemon threads remain, kill them and exit
@@ -117,8 +112,10 @@ class StagingService(object):
             if project in projects_to_stage:
                 # TODO Verify that there is no currently ongoing staging order before
                 # creating a new one...
+
                 staging_order = self.staging_repo.create_staging_order(source=project.path,
-                                                                       status=StagingStatus.pending)
+                                                                       status=StagingStatus.pending,
+                                                                       staging_target_dir=self.staging_dir)
                 log.debug("Created a staging order: {}".format(staging_order))
                 self.stage_order(staging_order)
                 stage_order_ids.append(staging_order.id)

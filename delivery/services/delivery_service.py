@@ -39,7 +39,7 @@ class BaseDeliveryService(object):
 class MoverDeliveryService(BaseDeliveryService):
 
     def __init__(self, external_program_service):
-        self.external_program_service = ExternalProgramService()
+        self.external_program_service = external_program_service
 
     def _deliver(self, delivery_order):
         pass
