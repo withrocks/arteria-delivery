@@ -56,6 +56,7 @@ class TestStagingService(unittest.TestCase):
     # - Stage a staging order
     def test_stage_order(self):
         self.staging_service.stage_order(stage_order=self.staging_order1)
+
         def _get_stating_status():
             return self.staging_order1.status
 
@@ -106,7 +107,7 @@ class TestStagingService(unittest.TestCase):
 
             def create_staging_order(self, source, status):
 
-                order = StagingOrder(id=len(self.orders_state)+1, source=source, status=status)
+                order = StagingOrder(id=len(self.orders_state) + 1, source=source, status=status)
                 self.orders_state.append(order)
                 return order
 
@@ -117,9 +118,9 @@ class TestStagingService(unittest.TestCase):
 
         self.staging_service.staging_repo = mock_staging_repo
 
-        result = self.staging_service.stage_runfolder(runfolder_id=runfolder1.name, projects_to_stage=[])
+        result = self.staging_service.stage_runfolder(
+            runfolder_id=runfolder1.name, projects_to_stage=[])
         self.assertEqual(result, map(lambda x: x.id, mock_staging_repo.orders_state))
-
 
     # - Reject staging a runfolder which does not exist runfolder
     def test_stage_runfolder_does_not_exist(self):
@@ -165,5 +166,3 @@ class TestStagingService(unittest.TestCase):
         actual = self.staging_service.kill_process_of_staging_order(self.staging_order1.id)
         mock_os.kill.assert_not_called()
         self.assertFalse(actual)
-
-

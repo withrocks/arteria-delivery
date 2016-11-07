@@ -24,4 +24,3 @@ class ExternalProgramService():
     def run_and_wait(cmd):
         execution = ExternalProgramService.run(cmd)
         return ExternalProgramService.wait_for_execution(execution)
-

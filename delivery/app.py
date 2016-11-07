@@ -60,6 +60,7 @@ def create_and_migrate_db(db_engine, db_connection_string):
         alembic_cfg.attributes["connection"] = connection
         upgrade_db(alembic_cfg, "head")
 
+
 def compose_application(config):
     runfolder_repo = FileSystemBasedRunfolderRepository(
         config["monitored_directory"])

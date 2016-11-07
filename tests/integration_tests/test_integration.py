@@ -82,7 +82,5 @@ class TestIntegration(AsyncHTTPTestCase):
                                      f=_get_delivery_status,
                                      expected=StagingStatus.staging_successful.name)
 
-
-
     def test_can_deliver_data(self):
         pass

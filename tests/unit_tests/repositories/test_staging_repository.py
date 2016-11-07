@@ -34,19 +34,19 @@ class TestStagingRepository(unittest.TestCase):
         self.staging_repo = DatabaseBasedStagingRepository(session_factory)
 
     ###
-    ### A database backed staging repository should able to:
-    ### - get staging orders by source
+    # A database backed staging repository should able to:
+    # - get staging orders by source
     def test_get_staging_orders_by_source(self):
         actual = self.staging_repo.get_staging_order_by_source(self.staging_order_1.source)
         self.assertEqual(len(actual), 1)
         self.assertEqual(self.staging_order_1.id, actual[0].id)
 
-    ### - get staging orders by id
+    # - get staging orders by id
     def test_get_staging_orders_by_id(self):
         actual = self.staging_repo.get_staging_order_by_id(self.staging_order_1.id)
         self.assertEqual(self.staging_order_1.id, actual.id)
 
-    ### - create a new staging_order and persist it to the db
+    # - create a new staging_order and persist it to the db
     def test_create_staging_order(self):
         order = self.staging_repo.create_staging_order(source='/foo', status=StagingStatus.pending)
 
@@ -58,6 +58,6 @@ class TestStagingRepository(unittest.TestCase):
 
         # Check that the object has been committed, i.e. there are no 'dirty' objects in session
         self.assertEqual(len(self.session.dirty), 0)
-        order_from_session = self.session.query(StagingOrder).filter(StagingOrder.id == order.id).one()
+        order_from_session = self.session.query(
+            StagingOrder).filter(StagingOrder.id == order.id).one()
         self.assertEqual(order_from_session.id, order.id)
-

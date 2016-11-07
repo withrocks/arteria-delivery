@@ -5,7 +5,7 @@ import os
 import signal
 
 from delivery.models.db_models import StagingStatus
-from delivery.exceptions import RunfolderNotFoundException,InvalidStatusException
+from delivery.exceptions import RunfolderNotFoundException, InvalidStatusException
 
 log = logging.getLogger(__name__)
 
@@ -15,7 +15,8 @@ class StagingService(object):
     # TODO On initiation of a Staging service, restart any ongoing stagings
     # since they should all have been killed.
     # And if we do so we need to make sure that the Staging service
-    # acts as a singleton, look at: http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
+    # acts as a singleton, look at:
+    # http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 
     def __init__(self, staging_dir, external_program_service, staging_repo, runfolder_repo, session_factory):
         self.staging_dir = staging_dir
@@ -104,7 +105,8 @@ class StagingService(object):
         runfolder = self.runfolder_repo.get_runfolder(runfolder_id)
 
         if not runfolder:
-            raise RunfolderNotFoundException("Couldn't find runfolder matching: {}".format(runfolder_id))
+            raise RunfolderNotFoundException(
+                "Couldn't find runfolder matching: {}".format(runfolder_id))
 
         # If no projects have been specified, stage all projects
         if not projects_to_stage:
@@ -113,7 +115,8 @@ class StagingService(object):
         stage_order_ids = []
         for project in runfolder.projects:
             if project in projects_to_stage:
-                # TODO Verify that there is no currently ongoing staging order before creating a new one...
+                # TODO Verify that there is no currently ongoing staging order before
+                # creating a new one...
                 staging_order = self.staging_repo.create_staging_order(source=project.path,
                                                                        status=StagingStatus.pending)
                 log.debug("Created a staging order: {}".format(staging_order))
@@ -144,7 +147,8 @@ class StagingService(object):
 
         try:
             if stage_order.status != StagingStatus.staging_in_progress:
-                raise InvalidStatusException("Can only kill processes where the staging order is 'staging_in_progress'")
+                raise InvalidStatusException(
+                    "Can only kill processes where the staging order is 'staging_in_progress'")
 
             os.kill(stage_order.pid, signal.SIGTERM)
 
