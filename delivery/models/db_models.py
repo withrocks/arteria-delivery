@@ -34,13 +34,6 @@ class StagingOrder(SQLAlchemyBase):
                                                                               self.pid)
 
 
-class DeliveryIdentifier(object):
-    # TODO Evaluate if we should use this or not, depends on how Mover will work
-
-    def __init__(self, identifier):
-        self.id = identifier
-
-
 class DeliveryStatus(base_enum.Enum):
 
     pending = 'pending'
