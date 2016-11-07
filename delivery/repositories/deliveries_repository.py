@@ -26,28 +26,36 @@ class BaseDeliveriesRepository(object):
 
 class DatabaseBasedDeliveriesRepository(BaseDeliveriesRepository):
 
-    def __init__(self, database_engine_handle):
-        self.db_handle = database_engine_handle
-
-    def _get_session(self):
-        Session = sessionmaker(self.db_handle)
-        return Session()
+    def __init__(self, session_factory):
+        self.session = session_factory()
 
     def get_delivery_orders_for_source(self, source_directory):
-        session = self._get_session()
-        return session.query(DeliveryOrder).filter(DeliveryOrder.delivery_source == source_directory).all()
+        return self.session.query(DeliveryOrder).filter(DeliveryOrder.delivery_source == source_directory).all()
 
     def get_delivery_order_by_id(self, delivery_order_id):
-        session = self._get_session()
-        return session.query(DeliveryOrder).filter(DeliveryOrder.id == delivery_order_id).one()
+        return self.session.query(DeliveryOrder).filter(DeliveryOrder.id == delivery_order_id).one()
 
     def get_delivery_orders(self):
-        session = self._get_session()
-        return session.query(DeliveryOrder).all()
+        return self.session.query(DeliveryOrder).all()
 
-    def add_delivery_order(self, delivery_order):
-        session = self._get_session()
-        session.add(delivery_order)
-        # TODO Probably need to do transaction handling here...
-        session.commit()
-        # TODO How to handle returns here?
+    def create_delivery_order(self, delivery_source, delivery_project, delivery_status, staging_order_id):
+        """
+
+        :param delivery_source: the source directory to be delivered
+        :param delivery_project: the project code for the project to deliver to
+        :param delivery_status: status of the delivery
+        :param staging_order_id: NOTA BENE: this will need to be verified against the staging table before
+                                 inserting it here, because at this point there is no validation that the
+                                 value is valid!
+        :return: the created delivery order
+        """
+        order = DeliveryOrder(delivery_source=delivery_source,
+                              delivery_project=delivery_project,
+                              delivery_status=delivery_status,
+                              staging_order_id=staging_order_id)
+        self.session.add(order)
+        self.session.commit()
+
+        return order
+
+

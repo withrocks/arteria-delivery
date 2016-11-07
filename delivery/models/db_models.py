@@ -51,6 +51,11 @@ class DeliveryOrder(SQLAlchemyBase):
     delivery_source = Column(String, nullable=False)
     delivery_project = Column(String, nullable=False)
     delivery_status = Column(Enum(DeliveryStatus))
+    # TODO This should really be enforcing a foreign key constraint
+    # against the staging order table, but this does not seem to
+    # be simple to get working with sqlite and alembic, so I'm
+    # skipping it for now. / JD 20161107
+    staging_order_id = Column(Integer)
 
     def __repr__(self):
         return "Delivery order: {id: %s, source: %s, project: %s, status: %s }" % (str(self.id),
