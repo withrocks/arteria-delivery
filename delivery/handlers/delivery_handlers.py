@@ -1,7 +1,7 @@
 
 import json
 
-from delivery.models.deliveries import DeliveryOrder
+from delivery.models.db_models import DeliveryOrder
 from delivery.handlers.utility_handlers import ArteriaDeliveryBaseHandler
 
 

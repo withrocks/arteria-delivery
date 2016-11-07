@@ -11,7 +11,7 @@ from tornado.web import Application
 from arteria.web.app import AppService
 
 from delivery.app import routes as app_routes, compose_application
-from delivery.models.deliveries import StagingStatus
+from delivery.models.db_models import StagingStatus
 
 from tests.test_utils import assert_eventually_equals
 

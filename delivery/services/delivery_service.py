@@ -1,7 +1,7 @@
 
 import logging
 
-from delivery.models.deliveries import DeliveryOrder, DeliveryIdentifier
+from delivery.models.db_models import DeliveryOrder, DeliveryIdentifier
 from delivery.services.external_program_service import ExternalProgramService
 
 log = logging.getLogger(__name__)

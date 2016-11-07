@@ -2,7 +2,7 @@ import unittest
 from mock import MagicMock
 
 from delivery.services.delivery_service import MoverDeliveryService
-from delivery.models.deliveries import DeliveryOrder
+from delivery.models.db_models import DeliveryOrder
 from delivery.models.runfolder import Runfolder
 
 

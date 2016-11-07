@@ -1,10 +1,12 @@
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Enum
 import enum as base_enum
 
 
+from sqlalchemy.ext.declarative import declarative_base
+
 SQLAlchemyBase = declarative_base()
+
 
 class StagingStatus(base_enum.Enum):
 
@@ -13,6 +15,7 @@ class StagingStatus(base_enum.Enum):
     staging_in_progress = 'staging_in_progress'
     staging_successful = 'staging_successful'
     staging_failed = 'staging_failed'
+
 
 class StagingOrder(SQLAlchemyBase):
 
@@ -29,6 +32,7 @@ class StagingOrder(SQLAlchemyBase):
                                                                               self.status,
                                                                               self.pid)
 
+
 class DeliveryIdentifier(object):
     # TODO Evaluate if we should use this or not, depends on how Mover will work
 
@@ -43,6 +47,7 @@ class DeliveryStatus(base_enum.Enum):
     delivery_in_progress = 'delivery_in_progress'
     delivery_finished = 'delivery_successful'
     delivery_failed = 'delivery_failed'
+
 
 class DeliveryOrder(SQLAlchemyBase):
 

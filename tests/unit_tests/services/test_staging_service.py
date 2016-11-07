@@ -6,7 +6,7 @@ import signal
 
 from delivery.exceptions import InvalidStatusException, RunfolderNotFoundException
 from delivery.services.staging_service import StagingService
-from delivery.models.deliveries import StagingOrder, StagingStatus
+from delivery.models.db_models import StagingOrder, StagingStatus
 from delivery.models.execution import ExecutionResult, Execution
 from tests.test_utils import FAKE_RUNFOLDERS, assert_eventually_equals
 

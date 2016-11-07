@@ -6,7 +6,7 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from delivery.models.deliveries import SQLAlchemyBase, StagingOrder, StagingStatus
+from delivery.models.db_models import SQLAlchemyBase, StagingOrder, StagingStatus
 from delivery.repositories.staging_repository import DatabaseBasedStagingRepository
 
 

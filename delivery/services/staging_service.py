@@ -4,7 +4,7 @@ import threading
 import os
 import signal
 
-from delivery.models.deliveries import StagingStatus
+from delivery.models.db_models import StagingStatus
 from delivery.exceptions import RunfolderNotFoundException,InvalidStatusException
 
 log = logging.getLogger(__name__)

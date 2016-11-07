@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 
-from delivery.models.deliveries import DeliveryOrder
+from delivery.models.db_models import DeliveryOrder
 
 
 class BaseDeliveriesRepository(object):

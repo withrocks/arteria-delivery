@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from delivery.models.deliveries import StagingOrder
+from delivery.models.db_models import StagingOrder
 
 
 class BaseStagingRepository(object):
