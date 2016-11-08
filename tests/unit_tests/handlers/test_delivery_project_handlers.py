@@ -47,6 +47,6 @@ class TestProjectHandlers(AsyncHTTPTestCase):
 
     def test_get_projects_for_runfolder(self):
         response = self.fetch(
-            self.API_BASE + "/runfolder/160930_ST-E00216_0111_BH37CWALXX/projects")
+            self.API_BASE + "/runfolders/160930_ST-E00216_0111_BH37CWALXX/projects")
         self.assertEqual(response.code, 200)
         self.assertTrue(len(json.loads(response.body)["projects"]) == 2)

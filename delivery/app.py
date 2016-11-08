@@ -36,7 +36,7 @@ def routes(**kwargs):
 
         url(r"/api/1.0/runfolders", RunfolderHandler, name="runfolder", kwargs=kwargs),
         url(r"/api/1.0/projects", ProjectHandler, name="projects", kwargs=kwargs),
-        url(r"/api/1.0/runfolder/(.+)/projects", ProjectsForRunfolderHandler,
+        url(r"/api/1.0/runfolders/(.+)/projects", ProjectsForRunfolderHandler,
             name="projects_for_runfolder", kwargs=kwargs),
 
 
