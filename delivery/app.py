@@ -54,7 +54,6 @@ def routes(**kwargs):
 def create_and_migrate_db(db_engine, db_connection_string):
     # TODO Do not hard code
     alembic_cfg = AlembicConfig('config/alembic.ini')
-    alembic_cfg.set_main_option("url", db_connection_string)
     alembic_cfg.set_main_option("script_location", "alembic/")
 
     with db_engine.begin() as connection:
