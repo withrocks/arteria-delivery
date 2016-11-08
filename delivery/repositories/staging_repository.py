@@ -5,23 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from delivery.models.db_models import StagingOrder
 
-
-class BaseStagingRepository(object):
-    """
-    Provides interface that needs to be supported by all subclasses
-    """
-
-    def get_staging_order_by_source(self, source):
-        raise NotImplementedError("Has to be implemented by subclass")
-
-    def get_staging_order_by_id(self, identifier):
-        raise NotImplementedError("Has to be implemented by subclass")
-
-    def create_staging_order(self, source, status, staging_target_dir):
-        raise NotImplementedError("Has to be implemented by subclass")
-
-
-class DatabaseBasedStagingRepository(BaseStagingRepository):
+class DatabaseBasedStagingRepository(object):
 
     def __init__(self, session_factory):
         self.session = session_factory()
