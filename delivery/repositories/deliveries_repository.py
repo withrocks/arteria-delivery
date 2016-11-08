@@ -1,6 +1,5 @@
-from sqlalchemy.orm import sessionmaker
 
-from delivery.models.db_models import DeliveryOrder
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class BaseDeliveriesRepository(object):
@@ -33,7 +32,15 @@ class DatabaseBasedDeliveriesRepository(BaseDeliveriesRepository):
         return self.session.query(DeliveryOrder).filter(DeliveryOrder.delivery_source == source_directory).all()
 
     def get_delivery_order_by_id(self, delivery_order_id):
-        return self.session.query(DeliveryOrder).filter(DeliveryOrder.id == delivery_order_id).one()
+        """
+        Get the delivery order matching the given id
+        :param delivery_order_id: to search for
+        :return: the matching delivery order, or None, if no order was found matchin id
+        """
+        try:
+            return self.session.query(DeliveryOrder).filter(DeliveryOrder.id == delivery_order_id).one()
+        except NoResultFound:
+            return None
 
     def get_delivery_orders(self):
         return self.session.query(DeliveryOrder).all()
