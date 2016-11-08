@@ -11,8 +11,18 @@ log = logging.getLogger(__name__)
 
 
 class DefaultFileSystemService(object):
+    """
+    File system service, used for accessing the file system in a way that can
+    easily be mocked out in testing.
+    """
 
-    def _list_directories(self, base_path):
+    @staticmethod
+    def _list_directories(base_path):
+        """
+        List all directories
+        :param base_path: base path to list directories in.
+        :return: a generator of paths to directories
+        """
 
         log.debug("Listing dirs in: {}".format(os.path.abspath(base_path)))
         for my_dir in os.listdir(base_path):
@@ -23,15 +33,33 @@ class DefaultFileSystemService(object):
                 yield dir_abs_path
 
     def find_project_directories(self, projects_base_dir):
+        """
+        Find project directories
+        :param projects_base_dir: directory to list
+        :return: a generator of paths to project directories
+        """
         return self._list_directories(projects_base_dir)
 
     def find_runfolder_directories(self, base_path):
+        """
+        Find runfolder directories
+        :param base_path: directory to list
+        :return: a generator or paths to runfolder directories
+        """
         return self._list_directories(base_path)
 
 
 class FileSystemBasedRunfolderRepository(object):
+    """
+    Uses the file system as a source of truth for information about what runfolders are available.
+    """
 
     def __init__(self, base_path, file_system_service=DefaultFileSystemService()):
+        """
+        Instantiate a new FileSystemBasedRunfolderRepository
+        :param base_path: the directory where runfolders are stored
+        :param file_system_service: a service which can access the file system.
+        """
         self._base_path = base_path
         self.file_system_service = file_system_service
 
@@ -65,9 +93,20 @@ class FileSystemBasedRunfolderRepository(object):
                 yield runfolder
 
     def get_runfolders(self):
+        """
+        Get all runfolders
+        :return: a generator of known runfolders
+        """
         return self._get_runfolders()
 
     def get_runfolder(self, runfolder):
+        """
+        Get a Runfolder object matching the specified name
+        :param runfolder: to look for
+        :return: the matching runfolder, or None if no match
+        :raises: a AssertionError if more than one runfolder was found
+                matching the given name.
+        """
         runfolders = self.get_runfolders()
         matching_name = [r for r in runfolders if r.name == runfolder]
         if len(matching_name) > 1:
