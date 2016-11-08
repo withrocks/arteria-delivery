@@ -1,34 +1,28 @@
 
 from sqlalchemy.orm.exc import NoResultFound
 
+from delivery.models.db_models import DeliveryOrder
 
-class BaseDeliveriesRepository(object):
+
+class DatabaseBasedDeliveriesRepository(object):
     """
-    Provides interface that needs to be supported by all subclasses
+    Creates database deliveries and stores theme in the backing database. Can also return objects
+    from the database given different factors.
     """
-
-    def get_delivery_orders_for_source(self, source_directory):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def get_ongoing_delivery_order_for_source(self, source_directory):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def get_delivery_order_by_id(self, delivery_order_id):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def get_delivery_orders(self):
-        raise NotImplementedError("Must be implemented by subclass")
-
-    def add_delivery_order(self, delivery_order):
-        raise NotImplementedError("Must be implemented by subclass")
-
-
-class DatabaseBasedDeliveriesRepository(BaseDeliveriesRepository):
 
     def __init__(self, session_factory):
+        """
+        Instantiate a new DatabaseBasedDeliveriesRepository
+        :param session_factory: a factory method that can create a new sqlalchemy Session object.
+        """
         self.session = session_factory()
 
     def get_delivery_orders_for_source(self, source_directory):
+        """
+        Returns all delivery orders which match the given source directory
+        :param source_directory: to search for
+        :return: all matching delivery orders as a list.
+        """
         return self.session.query(DeliveryOrder).filter(DeliveryOrder.delivery_source == source_directory).all()
 
     def get_delivery_order_by_id(self, delivery_order_id):
@@ -43,11 +37,15 @@ class DatabaseBasedDeliveriesRepository(BaseDeliveriesRepository):
             return None
 
     def get_delivery_orders(self):
+        """
+        Return all delivery orders for the database as a list
+        :return:
+        """
         return self.session.query(DeliveryOrder).all()
 
     def create_delivery_order(self, delivery_source, delivery_project, delivery_status, staging_order_id):
         """
-
+        Create a new delivery order and commit it to the database
         :param delivery_source: the source directory to be delivered
         :param delivery_project: the project code for the project to deliver to
         :param delivery_status: status of the delivery
