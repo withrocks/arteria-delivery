@@ -6,6 +6,10 @@ from delivery.handlers.utility_handlers import ArteriaDeliveryBaseHandler
 
 
 class DeliverByStageIdHandler(ArteriaDeliveryBaseHandler):
+    """
+    Handler for starting deliveries based on a previously staged directory/file
+    # TODO This is still work in progress
+    """
 
     def initialize(self, **kwargs):
         self.delivery_service = kwargs["delivery_service"]

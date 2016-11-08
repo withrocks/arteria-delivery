@@ -36,6 +36,9 @@ class VersionHandler(ArteriaDeliveryBaseHandler):
 
     def get(self):
         """
-        Returns the version of the checksum-service
+        Returns the version of the checksum-service as json. Format looks as follows:
+        {
+           "version": "1.0.0"
+        }
         """
         self.write_object({"version": version})
