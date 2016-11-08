@@ -52,6 +52,12 @@ def routes(**kwargs):
 
 
 def create_and_migrate_db(db_engine, db_connection_string):
+    """
+    Configures alembic and runs any none applied migrations found in the
+    `scripts_location` folder.
+    :param db_engine: engine handle for the database to apply the migrations to
+    :return: None
+    """
     # TODO Do not hard code
     alembic_cfg = AlembicConfig('config/alembic.ini')
     alembic_cfg.set_main_option("script_location", "alembic/")
@@ -62,6 +68,13 @@ def create_and_migrate_db(db_engine, db_connection_string):
 
 
 def compose_application(config):
+    """
+    Instantiates all service, repos, etc which are then used by the application.
+    The resulting dictionary can then be passed on to routes which instantiates the
+    http handlers.
+    :param config: a configuration instance
+    :return: a dictionary with references to any relevant resources
+    """
     runfolder_repo = FileSystemBasedRunfolderRepository(
         config["monitored_directory"])
     external_program_service = ExternalProgramService()
