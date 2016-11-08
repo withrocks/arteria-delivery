@@ -11,6 +11,11 @@ log = logging.getLogger(__name__)
 
 
 class StagingService(object):
+    """
+    Starting in this context means copying a directory or file to a separate directory before delivering it.
+    This service handles that in a asynchronous way. Copying operations (right nwo powered by rsync) can be
+    started, and their status monitored by querying the underlying database for their status.
+    """
 
     # TODO On initiation of a Staging service, restart any ongoing stagings
     # since they should all have been killed.
@@ -19,6 +24,14 @@ class StagingService(object):
     # http://python-3-patterns-idioms-test.readthedocs.io/en/latest/Singleton.html
 
     def __init__(self, staging_dir, external_program_service, staging_repo, runfolder_repo, session_factory):
+        """
+        Instantiate a new StagingService
+        :param staging_dir: the directory to which files/dirs should be staged
+        :param external_program_service: a instance of ExternalProgramService
+        :param staging_repo: a instance of DatabaseBasedStagingRepository
+        :param runfolder_repo: a instance of FileSystemBasedRunfolderRepository
+        :param session_factory: a factory method which can produce new sqlalchemy Session instances
+        """
         self.staging_dir = staging_dir
         self.external_program_service = external_program_service
         self.staging_repo = staging_repo
@@ -27,6 +40,16 @@ class StagingService(object):
 
     @staticmethod
     def _copy_dir(staging_order_id, external_program_service, session_factory, staging_repo):
+        """
+        Copies the file or directory indicated by the staging order by calling the external_program_service.
+        It will attempt the copying and update the database with the status of the StagingOrder depending on the
+        outcome.
+        :param staging_order_id: The id of the staging order to execute
+        :param external_program_service: A instance of ExternalProgramService
+        :param session_factory: A factory method which can produce a new sql alchemy Session instance
+        :param staging_repo: A instance of DatabaseBasedStagingRepository
+        :return: None, only reports back through side-effects
+        """
         session = session_factory()
 
         # This is a somewhat hacky work-around to the problem that objects created in one
@@ -64,6 +87,11 @@ class StagingService(object):
             session.commit()
 
     def stage_order(self, stage_order):
+        """
+        Validate a staging order and hand of the actual stating to a separate thread.
+        :param stage_order: to stage
+        :return: None
+        """
 
         session = self.session_factory()
 
@@ -95,7 +123,15 @@ class StagingService(object):
             session.commit()
             raise e
 
-    def stage_runfolder(self, runfolder_id, projects_to_stage):
+    def stage_runfolder(self, runfolder_id, projects_to_stage=None):
+        """
+        Stage a runfolder
+        :param runfolder_id: identifier (name) of runfolder that should be staged
+        :param projects_to_stage: defaults to None, otherwise only stage the project names given in this list, i.e.
+                                  ["ABC_123", "DEF_456"]
+        :return: the ids of the stage orders created. This can than be used to poll for status using e.g.
+                `get_status_of_stage_order`
+        """
 
         runfolder = self.runfolder_repo.get_runfolder(runfolder_id)
 
@@ -123,10 +159,20 @@ class StagingService(object):
         return stage_order_ids
 
     def get_stage_order_by_id(self, stage_order_id):
+        """
+        Get stage order by id
+        :param stage_order_id: id of StageOrder to get
+        :return: the StageOrder instance
+        """
         stage_order = self.staging_repo.get_staging_order_by_id(stage_order_id)
         return stage_order
 
     def get_status_of_stage_order(self, stage_order_id):
+        """
+        Get the status of a stage order
+        :param stage_order_id: id of StageOrder to get
+        :return: the status of the stage order, or None if not found
+        """
         stage_order = self.get_stage_order_by_id(stage_order_id)
         if stage_order:
             return stage_order.status
