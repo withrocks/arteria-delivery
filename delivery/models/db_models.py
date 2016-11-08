@@ -5,10 +5,18 @@ import enum as base_enum
 
 from sqlalchemy.ext.declarative import declarative_base
 
+"""
+Use this as the base for all database based models. This is used by alembic to know what the tables
+should look like in the database, so defining new base classes elsewhere will mean that they will not
+be updated properly in the actuall database.
+"""
 SQLAlchemyBase = declarative_base()
 
 
 class StagingStatus(base_enum.Enum):
+    """
+    Enumerate possible staging statuses
+    """
 
     pending = 'pending'
 
@@ -18,13 +26,28 @@ class StagingStatus(base_enum.Enum):
 
 
 class StagingOrder(SQLAlchemyBase):
+    """
+    Models a order to stage a directory or file. Code using it is responsible for updating
+    the staging_target and pid of the process carrying out the staging as this information becomes
+    available.
+    """
 
     __tablename__ = 'staging_orders'
 
+    # Unique identified of the staging
     id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # The directory or file which should be staged
     source = Column(String, nullable=False)
+
+    # The current status of the staging order
     status = Column(Enum(StagingStatus), nullable=False)
+
+    # The target path into which the file/directory will be moved
     staging_target = Column(String)
+
+    # The pid of the processes which is carrying out the staging, alternatively which
+    # which did do it if the status is no longer in progress.
     pid = Column(Integer)
 
     def __repr__(self):
@@ -35,6 +58,9 @@ class StagingOrder(SQLAlchemyBase):
 
 
 class DeliveryStatus(base_enum.Enum):
+    """
+    Enumerate possible delivery statuses
+    """
 
     pending = 'pending'
 
@@ -44,6 +70,10 @@ class DeliveryStatus(base_enum.Enum):
 
 
 class DeliveryOrder(SQLAlchemyBase):
+    """
+    Models a delivery order
+    TODO This is still WIP docs should be updated once we have settled on a model...
+    """
 
     __tablename__ = 'delivery_orders'
 
